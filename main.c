@@ -27,24 +27,6 @@ int		quit(t_sdl *sdl)
 	return(0);
 }
 
-int	c(double r, double g, double b)
-{
-	
-	if (r > 255)
-		r = 255;
-	if (g > 255)
-		g = 255;
-	if (b > 255)
-		b = 255;
-	if (r < 0)
-		r = 0;
-	if (g < 0)
-		g = 0;
-	if (b < 0)
-		b = 0;
-	return (((int)r << 16) + ((int)g << 8) + (int)b);
-}
-
 int	clear_map(t_sdl *sdl)
 {
 	if (SDL_SetRenderDrawColor(sdl->ren, 0x00, 0x00, 0x00, 0x00) == -1)
@@ -179,35 +161,6 @@ int		init(t_sdl *sdl)
 	return (0);
 }*/
 
-int		draw(t_sdl *sdl)
-{
-	int	i;
-	int	j;
-
-	j = 0;
-	while (j < WIN_H)
-	{
-		i = 0;
-		while (i < WIN_W)
-		{
-			
-			/*if (SDL_SetRenderDrawColor(sdl->ren, sdl->framebuffer[j][i].e[0], sdl->framebuffer[j][i].e[1], sdl->framebuffer[j][i].e[2], 0xff) == -1)
-			{
-				printf("error");
-				return (1);
-			}
-			if (SDL_RenderDrawPoint(sdl->ren, i, j) == -1)
-			{
-				printf("error");
-				return (1);
-			}*/
-			i++;
-		}
-		j++;
-	}
-	return (0);
-}
-
 int		hit(t_xs xs)
 {
 	int	i;
@@ -270,26 +223,44 @@ void	alg(t_sdl *sdl)
 	}
 }
 
+//void	raycast(t_sdl *sdl)
 void	raycast(t_sdl *sdl, t_ray r, int x, int y)
 {
 	t_sp	s;
-	t_xs	xs;
 	int		obj;
+	t_xs	xs;
+	t_color sp = {1, 0, 0};
+	t_color l_c = {1, 1, 1};
 
 	obj = 0;
-	s = set_sphere(set_v_p(0,0,0,1), 1, c(255,0,0), obj++);
-	
+	//t_ray r = set_ray(set_v_p(0,0,-5,1), set_v_p(0,0,1,0));
+	s = set_sphere(set_v_p(0,0,0,1), 1, sp, obj);
+	s.m.color = color(1, 0.2, 1);
+	s.m.ambient = 0;
+	t_light light = point_light(l_c, set_v_p(-10, 10, -10, 1));
+	//t_matrix m = matrix_mult(scaling(1, 0.5, 1), rotation_z(M_PI / 5));
+	//t_matrix m = translation(0,1,0);
+	//s.transform = set_transform(s.transform, m);
+
 	//s.transform = set_transform(s.transform, matrix_mult(shearing(1,0,0,0,0,0), scaling(0.5,1,1)));
 	xs = intersect_sp(s, r);
 	
-	//s = set_sphere(set_v_p(0,0,1,1), 1, c(255,255,255), obj++);
-	//xs = intersect_sp(s, r);
+
 	int hit_obj = hit(xs);
-	//printf("hit obj = %i\n", hit_obj);
-	//printf("xs.count = %i\n", xs.count[0]);
+	
 	if (hit_obj != -1)
-	{
-		sdl->img[y * WIN_W + x] = s.color;
+	{	
+		t_vec	point = position(r, xs.t1[hit_obj]);
+		t_vec	normal;
+		t_color color_l;
+		if (normal_at(xs.tr[hit_obj], point, &normal) == 0)
+			printf("normal error");
+		else
+		{
+			t_vec	eye = neg(r.d);
+			color_l = lighting(s.m, light, point, eye, normal);
+			sdl->img[y * WIN_W + x] = col_to_int(color_l);
+		}
 		/*int i = 0;
 		while (i < obj)
 		{
@@ -305,7 +276,8 @@ void	raycast(t_sdl *sdl, t_ray r, int x, int y)
 	}
 	else
 	{
-		sdl->img[y * WIN_W + x] = c(0,0,0);
+		t_color black = {0,0,0};
+		sdl->img[y * WIN_W + x] = col_to_int(black);
 	}
 }
 

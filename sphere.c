@@ -12,7 +12,7 @@
 
 #include "rt.h"
 
-t_sp	set_sphere(t_vec c, float r, int color, int obj)
+t_sp	set_sphere(t_vec c, float r, t_color color, int obj)
 {
 	t_sp	s;
 
@@ -21,6 +21,7 @@ t_sp	set_sphere(t_vec c, float r, int color, int obj)
 	s.color = color;
 	s.obj = obj;
 	s.transform = identity_matrix();
+	s.m = default_material();
 	return (s);
 }
 
@@ -62,11 +63,43 @@ t_xs	intersect_sp(t_sp s, t_ray r)
 		xs.count[s.obj] = 2;
 		xs.obj[s.obj] = s.obj;
 		xs.max_obj = s.obj;
-		xs.color[s.obj] = s.color;
+		//xs.color[s.obj] = s.color;
+		xs.tr[s.obj] = s.transform;
 		return (xs);
 	}
+	printf("matrix_inverse_test error in intersect_sp");
 	xs.count[s.obj] = 0;
+	xs.max_obj = s.obj;
 	return(xs);
+}
+
+int		normal_at(t_matrix s, t_vec world_point, t_vec *n)
+{
+	t_vec object_point;
+	t_vec object_normal;
+	t_vec	world_normal;
+
+	if (matrix_inverse_test(s) == 1)
+	{
+		object_point = matrix_mult_v_p(matrix_inverse(s), world_point);
+		object_normal = sub(object_point, set_v_p(0, 0, 0, 1));
+		world_normal = matrix_mult_v_p(matrix_transposing(matrix_inverse(s)), object_normal);
+		world_normal.c[3] = 0;
+		*n = normalize(world_normal);
+		return (1);
+	}
+	printf("error normal_at");
+	return(0);
+}
+
+t_vec	reflect(t_vec in, t_vec normal)
+{
+	t_vec a;
+	t_vec b;
+
+	b = mult(normal, (2 * dot(in, normal)));
+	a = sub(in, b);
+	return(a);
 }
 
 /*t_vec		getNormal(t_vec pi, t_sphere sp)

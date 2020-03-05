@@ -59,3 +59,46 @@ t_color	hadamard_prod(t_color a1, t_color a2)
 	b.b = a1.b * a2.b;
 	return (b);
 }
+
+int	col_to_int(t_color c)
+{
+	float	r;
+	float	g;
+	float	b;
+
+	c = mult_col(c, 255);
+	r = c.r;
+	g = c.g;
+	b = c.b;
+	if (r > 255)
+		r = 255;
+	if (g > 255)
+		g = 255;
+	if (b > 255)
+		b = 255;
+	if (r < 0)
+		r = 0;
+	if (g < 0)
+		g = 0;
+	if (b < 0)
+		b = 0;
+	return (((int)r << 16) + ((int)g << 8) + (int)b);
+}
+
+int	c(double r, double g, double b)
+{
+
+	if (r > 255)
+		r = 255;
+	if (g > 255)
+		g = 255;
+	if (b > 255)
+		b = 255;
+	if (r < 0)
+		r = 0;
+	if (g < 0)
+		g = 0;
+	if (b < 0)
+		b = 0;
+	return (((int)r << 16) + ((int)g << 8) + (int)b);
+}

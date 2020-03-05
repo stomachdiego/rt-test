@@ -31,25 +31,6 @@ typedef struct		s_vec
 	float			c[4];
 }					t_vec;
 
-typedef struct		s_xs
-{
-	int				count[100];
-	float			t1[100];
-	float			t2[100];
-	int				obj[100];
-	int				color[100];
-	int				max_obj;
-}					t_xs;
-
-typedef struct		s_sp
-{
-	t_vec			c;
-	float			r;
-	int				color;
-	int				obj;
-	t_matrix		transform;
-}					t_sp;
-
 typedef struct		s_color
 {
 	float			r;
@@ -57,6 +38,43 @@ typedef struct		s_color
 	float			b;
 
 }					t_color;
+
+typedef struct		s_material
+{
+	t_color			color;
+	float			ambient;
+	float			diffuse;
+	float			specular;
+	float			shininess;
+
+}					t_material;
+
+typedef struct		s_xs
+{
+	int				count[50];
+	float			t1[50];
+	float			t2[50];
+	int				obj[50];
+	//t_color			color[50];
+	int				max_obj;
+	t_matrix		tr[50];
+}					t_xs;
+
+typedef struct		s_sp
+{
+	t_vec			c;
+	float			r;
+	t_color			color;
+	int				obj;
+	t_matrix		transform;
+	t_material		m;
+}					t_sp;
+
+typedef struct		s_light
+{
+	t_color			intensity;
+	t_vec			pos;
+}					t_light;
 
 typedef struct		s_ray
 {
@@ -72,7 +90,6 @@ typedef struct		s_sdl
 	SDL_Texture		*text;
 	int				*img;
 	int				run;
-	t_color			canvas[WIN_W][WIN_H];
 }					t_sdl;
 
 int					check_eps(float a, float b);
@@ -115,7 +132,7 @@ t_matrix			shearing(float x_y, float x_z, float y_x, float y_z, float z_x, float
 t_ray				set_ray(t_vec or, t_vec di);
 t_vec				position(t_ray r, float t);
 
-t_sp				set_sphere(t_vec c, float r, int color, int obj);
+t_sp	set_sphere(t_vec c, float r, t_color color, int obj);
 t_xs				intersect_sp(t_sp s, t_ray r);
 t_matrix	set_transform(t_matrix s, t_matrix m);
 
@@ -124,5 +141,15 @@ t_ray	transform(t_ray r, t_matrix m);
 t_matrix	identity_matrix(void);
 
 void	raycast(t_sdl *sdl, t_ray r, int x, int y);
+//void	raycast(t_sdl *sdl);
+
+//light
+int		normal_at(t_matrix s, t_vec world_point, t_vec *n);
+t_vec				reflect(t_vec in, t_vec normal);
+t_light				point_light(t_color color, t_vec pos);
+t_material			default_material(void);
+t_color				lighting(t_material m, t_light l, t_vec pos, t_vec eye, t_vec norm_v);
+int					col_to_int(t_color c);
+int	c(double r, double g, double b);
 
 #endif
