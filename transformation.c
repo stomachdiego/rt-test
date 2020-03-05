@@ -179,3 +179,10 @@ t_ray	transform(t_ray r, t_matrix m)
 	r2.d = matrix_mult_v_p(m, r.d);
 	return(r2);
 }
+
+t_matrix	set_transform(t_matrix s, t_matrix m)
+{
+	s = matrix_mult(m, s);
+
+	return (s);
+}

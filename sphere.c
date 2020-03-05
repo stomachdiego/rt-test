@@ -20,10 +20,11 @@ t_sp	set_sphere(t_vec c, float r, int color, int obj)
 	s.r = r;
 	s.color = color;
 	s.obj = obj;
+	s.transform = identity_matrix();
 	return (s);
 }
 
-t_xs	intersect_sp(t_sp s, t_ray r, t_matrix m)
+t_xs	intersect_sp(t_sp s, t_ray r)
 {
 	t_xs	xs;
 	float	a;
@@ -33,44 +34,39 @@ t_xs	intersect_sp(t_sp s, t_ray r, t_matrix m)
 	float	disc;
 	t_ray	ray2;
 
-	if (matrix_inverse_test(m) == 1)
+	if (matrix_inverse_test(s.transform) == 1)
 	{
-	ray2 = transform(r, matrix_inverse(m));
+		ray2 = transform(r, matrix_inverse(s.transform));
 
-	sp_to_ray = sub(ray2.o, s.c);
+		sp_to_ray = sub(ray2.o, s.c);
 
-	a = dot(ray2.d, ray2.d);
-	b = 2 * dot(ray2.d, sp_to_ray);
-	c = dot(sp_to_ray, sp_to_ray) - 1;
+		a = dot(ray2.d, ray2.d);
+		b = 2 * dot(ray2.d, sp_to_ray);
+		c = dot(sp_to_ray, sp_to_ray) - 1;
 
-	disc = (b * b) - 4 * a * c;
+		disc = (b * b) - 4 * a * c;
 
-	if (disc < 0)
-	{
-		xs.count[s.obj] = 0;
+		if (disc < 0)
+		{
+			xs.count[s.obj] = 0;
+			return (xs);
+		}
+		xs.t1[s.obj] = ((-b -sqrt(disc)) / (2 * a));
+		xs.t2[s.obj] = ((-b +sqrt(disc)) / (2 * a));
+		if (xs.t1[s.obj] > xs.t2[s.obj])
+		{
+			a = xs.t1[s.obj];
+			xs.t1[s.obj] = xs.t2[s.obj];
+			xs.t2[s.obj] = a;
+		}
+		xs.count[s.obj] = 2;
+		xs.obj[s.obj] = s.obj;
+		xs.max_obj = s.obj;
+		xs.color[s.obj] = s.color;
 		return (xs);
-	}
-	xs.t1[s.obj] = ((-b -sqrt(disc)) / (2 * a));
-	xs.t2[s.obj] = ((-b +sqrt(disc)) / (2 * a));
-	if (xs.t1[s.obj] > xs.t2[s.obj])
-	{
-		a = xs.t1[s.obj];
-		xs.t1[s.obj] = xs.t2[s.obj];
-		xs.t2[s.obj] = a;
-	}
-	xs.count[s.obj] = 2;
-	xs.obj[s.obj] = s.obj;
-	xs.max_obj = s.obj;
-	return (xs);
 	}
 	xs.count[s.obj] = 0;
 	return(xs);
-}
-
-t_sp	set_transform_sp(t_sp s, t_matrix m)
-{
-	s.c = matrix_mult_v_p(m, s.c);
-	return(s);
 }
 
 /*t_vec		getNormal(t_vec pi, t_sphere sp)

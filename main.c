@@ -238,50 +238,75 @@ int		hit(t_xs xs)
 	if (b == 1)
 		return (a);
 	else
-		return (-1); // значить нет пересечений 
+		return (-1); // значит нет пересечений 
 }
 
-void	raycast(t_sdl *sdl)
+void	alg(t_sdl *sdl)
 {
-	t_ray	r;
+	int	x;
+	int	y;
+	float world_y;
+	float	world_x;
+	float wall_size = 7;
+	float wall_z = 10;
+	t_vec ray_org = set_v_p(0,0,-5,1);
+
+	y = 0;
+	float pixel_size = wall_size / WIN_H;
+	float half = wall_size / 2;
+	while (y < WIN_H)
+	{
+		world_y = half - pixel_size * y;
+		x = 0;
+		while (x < WIN_W)
+		{
+			world_x = -half + pixel_size * x;
+			t_vec pos = set_v_p(world_x, world_y, wall_z, 1);
+			t_ray r = set_ray(ray_org, normalize(sub(pos, ray_org)));
+			raycast(sdl, r, x, y);
+			x++;
+		}
+		y++;
+	}
+}
+
+void	raycast(t_sdl *sdl, t_ray r, int x, int y)
+{
 	t_sp	s;
 	t_xs	xs;
 	int		obj;
 
 	obj = 0;
-	r = set_ray(set_v_p(0,0,-5,1), set_v_p(0,0,1,0));
-	s = set_sphere(set_v_p(0,0,0,1), 1, c(255,255,255), obj++);
+	s = set_sphere(set_v_p(0,0,0,1), 1, c(255,0,0), obj++);
 	
-	xs = intersect_sp(s, r, scaling(2,2,2));
+	//s.transform = set_transform(s.transform, matrix_mult(shearing(1,0,0,0,0,0), scaling(0.5,1,1)));
+	xs = intersect_sp(s, r);
 	
 	//s = set_sphere(set_v_p(0,0,1,1), 1, c(255,255,255), obj++);
 	//xs = intersect_sp(s, r);
 	int hit_obj = hit(xs);
-	printf("hit obj = %i\n", hit_obj);
+	//printf("hit obj = %i\n", hit_obj);
+	//printf("xs.count = %i\n", xs.count[0]);
 	if (hit_obj != -1)
 	{
-		int i = 0;
+		sdl->img[y * WIN_W + x] = s.color;
+		/*int i = 0;
 		while (i < obj)
 		{
 			printf("xs.count = %i\n", xs.count[i]);
-			printf("xs[0] = %f\n", xs.t1[i]);
-			printf("xs[1] = %f\n", xs.t2[i]);
-			printf("obj = %i\n\n", xs.obj[i]);
+			if (xs.count[i] != 0)
+			{
+				printf("xs[0] = %f\n", xs.t1[i]);
+				printf("xs[1] = %f\n", xs.t2[i]);
+				printf("obj = %i\n\n", xs.obj[i]);
+			}
 			i++;
-		}
+		}*/
 	}
-	/*t_ray ray = set_ray(set_v_p(1,2,3,1), set_v_p(0,1,0,0));
-	t_matrix m = translation(3, 4, 5);
-	t_ray r2 = transform(ray, m);
-	printf("o = %f\n", r2.o.c[0]);
-	printf("o = %f\n", r2.o.c[1]);
-	printf("o = %f\n", r2.o.c[2]);
-	printf("o = %f\n", r2.o.c[3]);
-	printf("d = %f\n", r2.d.c[0]);
-	printf("d = %f\n", r2.d.c[1]);
-	printf("d = %f\n", r2.d.c[2]);
-	printf("d = %f\n", r2.d.c[3]);*/
-
+	else
+	{
+		sdl->img[y * WIN_W + x] = c(0,0,0);
+	}
 }
 
 int		main(void)
@@ -292,7 +317,9 @@ int		main(void)
 		quit(&sdl);
 	
 	sdl.run = 0;
-	raycast(&sdl);
+
+	alg(&sdl);
+	//raycast(&sdl);
 	//if (raycast(&sdl) != 0)
 	//	sdl.run = 1;
 	//if (draw(&sdl) != 0)

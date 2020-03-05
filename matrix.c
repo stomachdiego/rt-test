@@ -305,3 +305,28 @@ t_matrix	matrix_inverse(t_matrix m)
 	}
 	return (m2);
 }
+
+t_matrix	identity_matrix(void)
+{
+	t_matrix b;
+	int r;
+	int c;
+
+	r = 0;
+	while (r < 4)
+	{
+		c = 0;
+		while (c < 4)
+		{
+			b.m[r][c] = 0;
+			c++;
+		}
+		r++;
+	}
+	b.m[0][0] = 1;
+	b.m[1][1] = 1;
+	b.m[2][2] = 1;
+	b.m[3][3] = 1;
+	r = 0;
+	return (b);
+}

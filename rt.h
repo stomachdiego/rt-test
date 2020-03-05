@@ -17,8 +17,8 @@
 # include <SDL.h>
 # include <math.h>
 
-# define WIN_W 900
-# define WIN_H 550
+# define WIN_W 400
+# define WIN_H 400
 # define EPSILON 0.00001
 
 typedef struct		s_matrix
@@ -37,6 +37,7 @@ typedef struct		s_xs
 	float			t1[100];
 	float			t2[100];
 	int				obj[100];
+	int				color[100];
 	int				max_obj;
 }					t_xs;
 
@@ -46,6 +47,7 @@ typedef struct		s_sp
 	float			r;
 	int				color;
 	int				obj;
+	t_matrix		transform;
 }					t_sp;
 
 typedef struct		s_color
@@ -114,9 +116,13 @@ t_ray				set_ray(t_vec or, t_vec di);
 t_vec				position(t_ray r, float t);
 
 t_sp				set_sphere(t_vec c, float r, int color, int obj);
-t_xs				intersect_sp(t_sp s, t_ray r, t_matrix m);
-t_sp				set_transform_sp(t_sp s, t_matrix m);
+t_xs				intersect_sp(t_sp s, t_ray r);
+t_matrix	set_transform(t_matrix s, t_matrix m);
 
 t_ray	transform(t_ray r, t_matrix m);
+
+t_matrix	identity_matrix(void);
+
+void	raycast(t_sdl *sdl, t_ray r, int x, int y);
 
 #endif
