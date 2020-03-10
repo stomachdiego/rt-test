@@ -80,88 +80,7 @@ int		init(t_sdl *sdl)
 	return(i);
 }
 
-/*t_col	color_help(int i, int j, int k)
-{
-	t_col c;
-
-	c.e[0] = i;
-	c.e[1] = j;
-	c.e[2] = k;
-	return (c);
-}*/
-
-/*t_col	color_mult(t_col c, double d)
-{
-	c.e[0] = c.e[0] * d;
-	if (c.e[0] >= 255)
-		c.e[0] = 255;
-	c.e[1] = c.e[1] * d;
-	if (c.e[1] >= 255)
-		c.e[1] = 255;
-	c.e[2] = c.e[2] * d;
-	if (c.e[2] >= 255)
-		c.e[2] = 255;
-	return (c);
-}*/
-
-/*int		raycast(t_sdl *sdl)
-{
-	int	i;
-	int	j;
-	t_ray	ray;
-	t_sphere	sp;
-	t_sphere	light;
-	t_col		white;
-	t_col		red;
-
-	j = 0;
-	while (j < WIN_H)
-	{
-		i = 0;
-		while (i < WIN_W)
-		{
-			// send a ray through each pixel
-			ray = ray_help(setv(i, j, 0), setv(0, 0, 1));
-			
-			double t = 20000;
-			// check for intersections
-			
-			
-			sp = sphere(setv(WIN_W / 2, WIN_H / 2, 50), 50); //init sphere
-			light = sphere(setv(0, 0, 50), 1); //init light
-
-
-			if (sphere_intersect(ray, &t, sp) != 0)
-			{
-				// point of intersection
-				t_vec pi = add(ray.o, mulf(ray.d, t));
-				white.col = setv(255, 255, 255);
-				red.col = setv(255, 0, 0);
-				// color the pixel
-
-				t_vec L = sub(light.c, pi);
-				t_vec N = getNormal(pi, sp);
-				L = normalize(L);
-				N = normalize(N);
-				double dt = dot(L, N);
-				white.col = mulf(white.col, dt);
-				//white.col = mulf(white.col, 1.0);
-				//white.col = add(red.col, white.col);
-				//white.col = op_del(white.col, 2);
-				sdl->img[j * WIN_W + i] = c(white.col.e[0], white.col.e[1], white.col.e[2]);
-			}
-			
-
-			
-
-			i++;
-		}
-		j++;
-	}
-	return (0);
-}*/
-
-int		hit(t_xs xs)
+int		hit(t_x_t x)
 {
 	int	i;
 	int check;
@@ -171,9 +90,9 @@ int		hit(t_xs xs)
 	i = 0;
 	check = 0;
 	b = 0;
-	while (i <= xs.max_obj)
+	while (i < x.max_obj)
 	{
-		if (xs.t1[i] >= 0 && xs.count[i] != 0)
+		if (x.t[i].count > 0 && x.t[i].t >= 0)
 		{
 			b = 1;
 			if (check == 0)
@@ -181,7 +100,7 @@ int		hit(t_xs xs)
 				a = i;
 				check++;
 			}
-			if (xs.t1[i] < xs.t1[a])
+			if (x.t[i].t < x.t[a].t)
 			{
 				a = i;
 			}
@@ -194,7 +113,7 @@ int		hit(t_xs xs)
 		return (-1); // значит нет пересечений 
 }
 
-void	alg(t_sdl *sdl)
+void	alg(t_sdl *sdl, t_world w)
 {
 	int	x;
 	int	y;
@@ -216,17 +135,26 @@ void	alg(t_sdl *sdl)
 			world_x = -half + pixel_size * x;
 			t_vec pos = set_v_p(world_x, world_y, wall_z, 1);
 			t_ray r = set_ray(ray_org, normalize(sub(pos, ray_org)));
-			raycast(sdl, r, x, y);
+			//raycast(sdl, r, x, y, w);
 			x++;
 		}
 		y++;
 	}
 }
 
+/*void	raycast(t_sdl *sdl, t_ray r, int x, int y, t_world w)
+{
+	t_color	c;
+
+	c = color_at(w, r);
+	sdl->img[y * WIN_W + x] = col_to_int(c);
+}*/
+
 //void	raycast(t_sdl *sdl)
-void	raycast(t_sdl *sdl, t_ray r, int x, int y)
+/*void	raycast(t_sdl *sdl, t_ray r, int x, int y)
 {
 	t_sp	s;
+	t_sp	s1;
 	int		obj;
 	t_xs	xs;
 	t_color sp = {1, 0, 0};
@@ -242,7 +170,7 @@ void	raycast(t_sdl *sdl, t_ray r, int x, int y)
 	//t_matrix m = translation(0,1,0);
 	//s.transform = set_transform(s.transform, m);
 
-	//s.transform = set_transform(s.transform, matrix_mult(shearing(1,0,0,0,0,0), scaling(0.5,1,1)));
+	//s.transform = set_transform(s.transform,scaling(1,0.5,1));
 	xs = intersect_sp(s, r);
 	
 
@@ -258,7 +186,7 @@ void	raycast(t_sdl *sdl, t_ray r, int x, int y)
 		else
 		{
 			t_vec	eye = neg(r.d);
-			color_l = lighting(s.m, light, point, eye, normal);
+			color_l = lighting(xs.m[hit_obj], light, point, eye, normal);
 			sdl->img[y * WIN_W + x] = col_to_int(color_l);
 		}
 		/*int i = 0;
@@ -273,29 +201,119 @@ void	raycast(t_sdl *sdl, t_ray r, int x, int y)
 			}
 			i++;
 		}*/
-	}
+	/*}
 	else
 	{
 		t_color black = {0,0,0};
 		sdl->img[y * WIN_W + x] = col_to_int(black);
 	}
-}
+}*/
 
 int		main(void)
 {
 	t_sdl		sdl;
+	t_world		w;
 
 	if (init(&sdl) != 0)
 		quit(&sdl);
 	
 	sdl.run = 0;
 
-	alg(&sdl);
-	//raycast(&sdl);
-	//if (raycast(&sdl) != 0)
-	//	sdl.run = 1;
-	//if (draw(&sdl) != 0)
-	//	sdl.run = 1;
+
+//WORLD
+	//floor
+	w.s[0] = set_sphere(0);
+	w.s[0].transform = scaling(10,0.01,10);
+	w.s[0].m.color = color(1, 0.9, 0.9);
+	w.s[0].m.specular = 0;
+	//left_wall
+	w.s[1] = set_sphere(1);
+	w.s[1].transform = matrix_mult(translation(0,0,5), rotation_y(-M_PI / 4));
+	w.s[1].transform = matrix_mult(w.s[1].transform, rotation_x(M_PI / 2));
+	w.s[1].transform = matrix_mult(w.s[1].transform, scaling(10, 0.01, 10));
+	w.s[1].m.color = color(1, 0.9, 0.9);
+	w.s[1].m.specular = 0;
+	//right_wall
+	w.s[2] = set_sphere(2);
+	w.s[2].transform = matrix_mult(translation(0,0,5), rotation_y(M_PI / 4));
+	w.s[2].transform = matrix_mult(w.s[2].transform, rotation_x(M_PI / 2));
+	w.s[2].transform = matrix_mult(w.s[2].transform, scaling(10, 0.01, 10));
+	w.s[2].m.color = color(1, 0.9, 0.9);
+	w.s[2].m.specular = 0;
+	//middle
+	w.s[3] = set_sphere(3);
+	w.s[3].transform = translation(-0.5, 1, 0.5);
+	w.s[3].m.color = color(0.1, 1, 0.5);
+	w.s[3].m.specular = 0.3;
+	w.s[3].m.diffuse = 0.7;
+	//right
+	w.s[4] = set_sphere(4);
+	w.s[4].transform = matrix_mult(translation(1.5, 0.5, -0.5), scaling(0.5, 0.5, 0.5));
+	w.s[4].m.color = color(0.5, 1, 0.1);
+	w.s[4].m.specular = 0.3;
+	w.s[4].m.diffuse = 0.7;
+	//left
+	w.s[5] = set_sphere(5);
+	w.s[5].transform = matrix_mult(translation(-1.5, 0.33, -0.75), scaling(0.33, 0.33, 0.33));
+	w.s[5].m.color = color(1, 0.8, 0.1);
+	w.s[5].m.specular = 0.3;
+	w.s[5].m.diffuse = 0.7;
+	//light
+	w.light = point_light(color(1, 1, 1), set_v_p(-10, 10, -10, 1));
+	w.max_obj = 6;
+//WORLD
+
+	//camera
+	t_camera c = camera(WIN_W, WIN_H, M_PI / 3);
+	c.transform = view_transform(set_v_p(0, 1.5, -5, 1), set_v_p(0, 1, 0, 1), set_v_p(0, 1, 0, 0));
+	render(&sdl, c, w);
+	
+/*
+	w.light = point_light(color(1, 1, 1), set_v_p(0, 0, -10, 1));
+	
+	w.s[0] = set_sphere(0);
+	//w.s[0].transform = scaling(10,0.01,10);
+	w.s[0].m.color = color(1, 0.9, 0.9);
+	//w.s[0].m.specular = 0;
+	
+	w.s[1] = set_sphere(1);
+	w.s[1].transform = translation(0,0,1);
+	//w.s[1].m.color = color(1, 1, 1);
+	//w.s[1].m.specular = 0;
+
+	t_ray r = set_ray(set_v_p(0,0,-5,1), set_v_p(0,0,1,0));
+	t_i i = intersection(5, w.s[1]);
+
+	t_comps comps = prepare_computations(i, r);
+
+	if (comps.over_point.c[2] < -EPSILON / 2)
+	{
+		if (comps.point.c[2] > comps.over_point.c[2])
+		{
+			printf("y\n");
+		}
+	}
+
+	t_color col = shade_hit(w, comps);
+
+	printf("r %f\n", col.r);
+	printf("r %f\n", col.g);
+	printf("r %f\n", col.b);
+*/
+	/*
+	default_world(&w);
+	w.light = point_light(color(1,1,1), set_v_p(0, 0, -10, 1));
+	w.s[1].transform = translation(0,0,1);
+	t_ray r = set_ray(set_v_p(0,0,5,1), set_v_p(0,0,1,0));
+	t_i i = intersection(4, w.s[1]);
+	t_comps comps = prepare_computations(i, r);
+	t_color col = shade_hit(w, comps);
+
+	printf("r %f\n", col.r);
+	printf("r %f\n", col.g);
+	printf("r %f\n", col.b);
+	*/
+	
 	SDL_UpdateTexture(sdl.text, NULL, sdl.img, WIN_W * (sizeof(int)));
 	SDL_RenderClear(sdl.ren);
 	SDL_RenderCopy(sdl.ren, sdl.text, NULL, NULL);

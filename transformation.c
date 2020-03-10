@@ -82,7 +82,7 @@ t_matrix	rotation_x(float r)
 	}
 	m.m[0][0] = 1;
 	m.m[1][1] = cos(r);
-	m.m[1][2] = -sin(r);
+	m.m[1][2] = -1 * sin(r);
 	m.m[2][1] = sin(r);
 	m.m[2][2] = cos(r);
 	m.m[3][3] = 1;
@@ -109,7 +109,7 @@ t_matrix	rotation_y(float r)
 	m.m[0][0] = cos(r);
 	m.m[0][2] = sin(r);
 	m.m[1][1] = 1;
-	m.m[2][0] = -sin(r);
+	m.m[2][0] = -1 * sin(r);
 	m.m[2][2] = cos(r);
 	m.m[3][3] = 1;
 	return (m);
@@ -133,7 +133,7 @@ t_matrix	rotation_z(float r)
 		i++;
 	}
 	m.m[0][0] = cos(r);
-	m.m[0][1] = -sin(r);
+	m.m[0][1] = -1 * sin(r);
 	m.m[1][0] = sin(r);
 	m.m[1][1] = cos(r);
 	m.m[2][2] = 1;
@@ -144,7 +144,7 @@ t_matrix	rotation_z(float r)
 t_matrix	shearing(float x_y, float x_z, float y_x, float y_z, float z_x, float z_y)
 {
 	t_matrix	m;
-	int			i;
+	/*int			i;
 	int			j;
 
 	i = 0;
@@ -161,7 +161,8 @@ t_matrix	shearing(float x_y, float x_z, float y_x, float y_z, float z_x, float z
 	m.m[0][0] = 1;
 	m.m[1][1] = 1;
 	m.m[2][2] = 1;
-	m.m[3][3] = 1;
+	m.m[3][3] = 1;*/
+	m = identity_matrix();
 	m.m[0][1] = x_y;
 	m.m[0][2] = x_z;
 	m.m[1][0] = y_x;
@@ -183,6 +184,43 @@ t_ray	transform(t_ray r, t_matrix m)
 t_matrix	set_transform(t_matrix s, t_matrix m)
 {
 	s = matrix_mult(m, s);
-
 	return (s);
 }
+
+t_matrix	view_transform(t_vec from, t_vec to, t_vec up)
+{
+	t_vec		forward;
+	t_vec		upn;
+	t_vec		left;
+	t_vec		true_up;
+	t_matrix	orientation;
+
+	forward = normalize(sub(to, from));
+	upn = normalize(up);
+	left = cross(forward, upn);
+	true_up = cross(left, forward);
+	orientation = matrix_nul(orientation);
+	orientation.m[0][0] = left.c[0];
+	orientation.m[0][1] = left.c[1];
+	orientation.m[0][2] = left.c[2];
+	orientation.m[1][0] = true_up.c[0];
+	orientation.m[1][1] = true_up.c[1];
+	orientation.m[1][2] = true_up.c[2];
+	orientation.m[2][0] = -forward.c[0];
+	orientation.m[2][1] = -forward.c[1];
+	orientation.m[2][2] = -forward.c[2];
+	orientation.m[3][3] = 1;
+	return (matrix_mult(orientation,
+	translation(-from.c[0], -from.c[1], -from.c[2])));
+}
+
+t_matrix	default_view_transf(void)
+{
+	t_vec	from = set_v_p(0,0,0,1);
+	t_vec	to = set_v_p(0,0,-1,1);
+	t_vec	up = set_v_p(0,1,0,0);
+
+	t_matrix	t = view_transform(from, to, up);
+	return (t);
+}
+
