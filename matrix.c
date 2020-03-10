@@ -165,12 +165,12 @@ t_matrix	matrix_transposing(t_matrix a)
 	return (b);
 }
 
-float	matrix_determinant_2(t_matrix m)
+double	matrix_determinant_2(t_matrix m)
 {
-	float	a;
-	float	b;
-	float	c;
-	float	d;
+	double	a;
+	double	b;
+	double	c;
+	double	d;
 
 	a = m.m[0][0];
 	b = m.m[0][1];
@@ -211,9 +211,9 @@ t_matrix	matrix_submatrix(t_matrix m, int a, int b, int size)
 	return (v);
 }
 
-float	matrix_minor(t_matrix m, int a, int b, int size)
+double	matrix_minor(t_matrix m, int a, int b, int size)
 {
-	float w;
+	double w;
 
 	m = matrix_submatrix(m, a, b, size);
 	if (size == 4)
@@ -223,7 +223,7 @@ float	matrix_minor(t_matrix m, int a, int b, int size)
 	return (w);
 }
 
-float	matrix_cofactor(t_matrix m, int a, int b, int size)
+double	matrix_cofactor(t_matrix m, int a, int b, int size)
 {
 	int i;
 	int j;
@@ -245,12 +245,12 @@ float	matrix_cofactor(t_matrix m, int a, int b, int size)
 	return (matrix_minor(m, a, b, size));
 }
 
-float	matrix_determinant_3(t_matrix m)
+double	matrix_determinant_3(t_matrix m)
 {
-	float	a;
-	float	b;
-	float	c;
-	float	res;
+	double	a;
+	double	b;
+	double	c;
+	double	res;
 	
 	a = m.m[0][0];
 	b = m.m[0][1];
@@ -260,13 +260,13 @@ float	matrix_determinant_3(t_matrix m)
 	return(res);
 }
 
-float	matrix_determinant_4(t_matrix m)
+double	matrix_determinant_4(t_matrix m)
 {
-	float	a;
-	float	b;
-	float	c;
-	float	d;
-	float	res;
+	double	a;
+	double	b;
+	double	c;
+	double	d;
+	double	res;
 	
 	a = m.m[0][0];
 	b = m.m[0][1];
@@ -288,7 +288,7 @@ t_matrix	matrix_inverse(t_matrix m)
 {
 	int r;
 	int c;
-	float cof;
+	double cof;
 	t_matrix m2;
 
 	r = 0;

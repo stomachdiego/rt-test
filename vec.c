@@ -12,7 +12,7 @@
 
 #include "rt.h"
 
-t_vec	set_v_p(float a, float b, float c, float d)
+t_vec	set_v_p(double a, double b, double c, double d)
 {
 	t_vec	t;
 
@@ -23,7 +23,7 @@ t_vec	set_v_p(float a, float b, float c, float d)
 	return (t);
 }
 
-int	check_eps(float a, float b)
+int	check_eps(double a, double b)
 {
 	if (fabs(a - b) < EPSILON)
 		return (1);

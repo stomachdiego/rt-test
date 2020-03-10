@@ -43,7 +43,7 @@ t_vec	neg(t_vec a)
 	return (a);
 }
 
-t_vec	mult(t_vec a, float b)
+t_vec	mult(t_vec a, double b)
 {
 	a.c[0] = a.c[0] * b;
 	a.c[1] = a.c[1] * b;
@@ -52,7 +52,7 @@ t_vec	mult(t_vec a, float b)
 	return (a);
 }
 
-t_vec	divi(t_vec a, float b)
+t_vec	divi(t_vec a, double b)
 {
 	a.c[0] = a.c[0] / b;
 	a.c[1] = a.c[1] / b;
@@ -61,14 +61,14 @@ t_vec	divi(t_vec a, float b)
 	return (a);
 }
 
-float	magnitude(t_vec a)
+double	magnitude(t_vec a)
 {
 	return (sqrt(a.c[0] * a.c[0] + a.c[1] * a.c[1] + a.c[2] * a.c[2] + a.c[3] * a.c[3]));
 }
 
 t_vec	normalize(t_vec v)
 {
-	float mg = magnitude(v);
+	double mg = magnitude(v);
 	v.c[0] = v.c[0] / mg;
 	v.c[1] = v.c[1] / mg;
 	v.c[2] = v.c[2] / mg;
@@ -76,7 +76,7 @@ t_vec	normalize(t_vec v)
 	return (v);
 }
 
-float	dot(t_vec a, t_vec b)
+double	dot(t_vec a, t_vec b)
 {
 	return (a.c[0] * b.c[0] + a.c[1] * b.c[1] + a.c[2] * b.c[2] + a.c[3] * b.c[3]);
 }

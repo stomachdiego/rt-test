@@ -17,42 +17,42 @@
 # include <SDL.h>
 # include <math.h>
 
-# define WIN_W 150
-# define WIN_H 150
+# define WIN_W 1000
+# define WIN_H 1000
 # define EPSILON 0.00001
 
 typedef struct		s_matrix
 {
-	float			m[4][4];
+	double			m[4][4];
 }					t_matrix;
 
 typedef struct		s_vec
 {
-	float			c[4];
+	double			c[4];
 }					t_vec;
 
 typedef struct		s_color
 {
-	float			r;
-	float			g;
-	float			b;
+	double			r;
+	double			g;
+	double			b;
 
 }					t_color;
 
 typedef struct		s_material
 {
 	t_color			color;
-	float			ambient;
-	float			diffuse;
-	float			specular;
-	float			shininess;
+	double			ambient;
+	double			diffuse;
+	double			specular;
+	double			shininess;
 
 }					t_material;
 
 typedef struct		s_t_h
 {
-	float			t1;
-	float			t2;
+	double			t1;
+	double			t2;
 	int				obj;
 	int				count;
 
@@ -60,7 +60,7 @@ typedef struct		s_t_h
 
 typedef struct		s_t_o
 {
-	float			t;
+	double			t;
 	int				obj;
 	int				count;
 
@@ -70,11 +70,11 @@ typedef struct		s_camera
 {
 	int				hsize;
 	int				vsize;
-	float			fov;
+	double			fov;
 	t_matrix		transform;
-	float			half_width;
-	float			half_height;
-	float			pixel_size;
+	double			half_width;
+	double			half_height;
+	double			pixel_size;
 }					t_camera;
 
 typedef struct		s_x
@@ -93,7 +93,7 @@ typedef struct		s_x_t
 typedef struct		s_sp
 {
 	t_vec			c;
-	float			r;
+	double			r;
 	t_color			color;
 	int				obj;
 	t_matrix		transform;
@@ -102,13 +102,13 @@ typedef struct		s_sp
 
 typedef struct		s_i
 {
-	float			t;
+	double			t;
 	t_sp			obj;
 }					t_i;
 
 typedef struct		s_comps
 {
-	float			t;
+	double			t;
 	t_sp			obj;
 	t_vec			point;
 	t_vec			eyev;
@@ -147,21 +147,21 @@ typedef struct		s_sdl
 	int				run;
 }					t_sdl;
 
-int					check_eps(float a, float b);
+int					check_eps(double a, double b);
 t_vec				add(t_vec a1, t_vec a2);
-t_vec				set_v_p(float a, float b, float c, float d);
+t_vec				set_v_p(double a, double b, double c, double d);
 t_vec				sub(t_vec a1, t_vec a2);
 t_vec				neg(t_vec a);
-t_vec				mult(t_vec a, float b);
-t_vec				divi(t_vec a, float b);
-float				magnitude(t_vec a);
+t_vec				mult(t_vec a, double b);
+t_vec				divi(t_vec a, double b);
+double				magnitude(t_vec a);
 t_vec				normalize(t_vec v);
-float				dot(t_vec a, t_vec b);
+double				dot(t_vec a, t_vec b);
 t_vec				cross(t_vec a, t_vec b);
-t_color				color(float r, float g, float b);
+t_color				color(double r, double g, double b);
 t_color				add_col(t_color a1, t_color a2);
 t_color				sub_col(t_color a1, t_color a2);
-t_color				mult_col(t_color a, float b);
+t_color				mult_col(t_color a, double b);
 t_color				hadamard_prod(t_color a1, t_color a2);
 int					identic_m_4(t_matrix a, t_matrix b);
 t_matrix			matrix_mult(t_matrix a, t_matrix b);
@@ -169,24 +169,24 @@ t_vec				matrix_mult_v_p(t_matrix a, t_vec b);
 t_matrix			matrix_identity(t_matrix a);
 t_vec				matrix_identity_v_p(t_vec a);
 t_matrix			matrix_transposing(t_matrix a);
-float				matrix_determinant_2(t_matrix a);
+double				matrix_determinant_2(t_matrix a);
 t_matrix			matrix_submatrix(t_matrix m, int a, int b, int size);
-float				matrix_minor(t_matrix m, int a, int b, int size);
-float				matrix_cofactor(t_matrix m, int a, int b, int size);
-float				matrix_determinant_3(t_matrix m);
-float				matrix_determinant_4(t_matrix m);
+double				matrix_minor(t_matrix m, int a, int b, int size);
+double				matrix_cofactor(t_matrix m, int a, int b, int size);
+double				matrix_determinant_3(t_matrix m);
+double				matrix_determinant_4(t_matrix m);
 int					matrix_inverse_test(t_matrix m);
 t_matrix			matrix_inverse(t_matrix m);
 t_matrix			matrix_nul(t_matrix m);
-t_matrix			translation(float x, float y, float z);
-t_matrix			scaling(float x, float y, float z);
-t_matrix			rotation_x(float r);
-t_matrix			rotation_y(float r);
-t_matrix			rotation_z(float r);
-t_matrix			shearing(float x_y, float x_z, float y_x, float y_z, float z_x, float z_y);
+t_matrix			translation(double x, double y, double z);
+t_matrix			scaling(double x, double y, double z);
+t_matrix			rotation_x(double r);
+t_matrix			rotation_y(double r);
+t_matrix			rotation_z(double r);
+t_matrix			shearing(double x_y, double x_z, double y_x, double y_z, double z_x, double z_y);
 
 t_ray				set_ray(t_vec or, t_vec di);
-t_vec				position(t_ray r, float t);
+t_vec				position(t_ray r, double t);
 
 t_sp	set_sphere(int obj);
 t_x	intersect_sp(t_sp s, t_ray r, t_x x);
@@ -215,7 +215,7 @@ int	c(double r, double g, double b);
 void	default_world(t_world *w);
 t_x_t	intersect_world(t_world w, t_ray r);
 void	bubblesort(t_t_o *num, int size);
-t_i	intersection(float t, t_sp obj);
+t_i	intersection(double t, t_sp obj);
 t_comps	prepare_computations(t_i i, t_ray r);
 //shade
 t_color	shade_hit(t_world w, t_comps c);
@@ -227,7 +227,7 @@ t_matrix	view_transform(t_vec from, t_vec to, t_vec up);
 t_matrix	default_view_transf(void);
 
 //camera
-t_camera    camera(float  hsize, float vsize, float fov);
+t_camera    camera(double  hsize, double vsize, double fov);
 t_ray   ray_for_pixel(t_camera camera, int px, int py);
 void    render(t_sdl *sdl, t_camera camera, t_world world);
 t_x_t	t_to_h(t_x x, t_x_t x_t);

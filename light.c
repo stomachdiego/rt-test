@@ -39,12 +39,12 @@ t_color	lighting(t_material m, t_light l, t_vec pos, t_vec eye, t_vec norm_v, in
 	t_color	effective_color;
 	t_vec	light_v;
 	t_color ambient;
-	float	light_dot_normal;
+	double	light_dot_normal;
 	t_color	diffuse;
 	t_color specular;
 	t_vec	reflect_v;
-	float	reflect_dot_eye;
-	float	factor;
+	double	reflect_dot_eye;
+	double	factor;
 
 	effective_color = hadamard_prod(m.color, l.intensity);
 	light_v = normalize(sub(l.pos, pos));
@@ -81,7 +81,7 @@ int	is_shadow(t_world w, t_vec	p)
 {
 	t_vec	v;
 	t_vec	direction;
-	float	distance;
+	double	distance;
 	t_ray	r;
 	t_x_t	x;
 	int		hit_obj;

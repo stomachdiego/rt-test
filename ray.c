@@ -12,7 +12,7 @@
 
 #include "rt.h"
 
-t_vec	position(t_ray r, float t)
+t_vec	position(t_ray r, double t)
 {
 	t_vec a;
 	t_vec b;

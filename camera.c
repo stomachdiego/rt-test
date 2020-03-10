@@ -12,11 +12,11 @@
 
 #include "rt.h"
 
-t_camera    camera(float  hsize, float vsize, float fov)
+t_camera    camera(double  hsize, double vsize, double fov)
 {
     t_camera    c;
-    float       half_view;
-    float       aspect;
+    double       half_view;
+    double       aspect;
 
     c.hsize = hsize;
     c.vsize = vsize;
@@ -40,10 +40,10 @@ t_camera    camera(float  hsize, float vsize, float fov)
 
 t_ray   ray_for_pixel(t_camera camera, int px, int py)
 {
-    float   xoffset;
-    float   yoffset;
-    float   world_x;
-    float   wolrd_y;
+    double   xoffset;
+    double   yoffset;
+    double   world_x;
+    double   wolrd_y;
     t_vec   pixel;
     t_vec   origin;
     t_vec   direction;

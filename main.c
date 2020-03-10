@@ -117,15 +117,15 @@ void	alg(t_sdl *sdl, t_world w)
 {
 	int	x;
 	int	y;
-	float world_y;
-	float	world_x;
-	float wall_size = 7;
-	float wall_z = 10;
+	double world_y;
+	double	world_x;
+	double wall_size = 7;
+	double wall_z = 10;
 	t_vec ray_org = set_v_p(0,0,-5,1);
 
 	y = 0;
-	float pixel_size = wall_size / WIN_H;
-	float half = wall_size / 2;
+	double pixel_size = wall_size / WIN_H;
+	double half = wall_size / 2;
 	while (y < WIN_H)
 	{
 		world_y = half - pixel_size * y;

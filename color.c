@@ -12,7 +12,7 @@
 
 #include "rt.h"
 
-t_color	color(float r, float g, float b)
+t_color	color(double r, double g, double b)
 {
 	t_color c;
 
@@ -42,7 +42,7 @@ t_color	sub_col(t_color a1, t_color a2)
 	return (b);
 }
 
-t_color	mult_col(t_color a, float b)
+t_color	mult_col(t_color a, double b)
 {
 	a.r = a.r * b;
 	a.g = a.g * b;
@@ -62,9 +62,9 @@ t_color	hadamard_prod(t_color a1, t_color a2)
 
 int	col_to_int(t_color c)
 {
-	float	r;
-	float	g;
-	float	b;
+	double	r;
+	double	g;
+	double	b;
 
 	c = mult_col(c, 255);
 	r = c.r;

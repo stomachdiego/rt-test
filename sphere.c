@@ -27,11 +27,11 @@ t_sp	set_sphere(int obj)
 
 t_x	intersect_sp(t_sp s, t_ray r, t_x x)
 {
-	float	a;
-	float	b;
-	float	c;
+	double	a;
+	double	b;
+	double	c;
 	t_vec	sp_to_ray;
-	float	disc;
+	double	disc;
 	t_ray	ray2;
 
 	if (matrix_inverse_test(s.transform) == 1)

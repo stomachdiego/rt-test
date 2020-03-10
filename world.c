@@ -101,7 +101,7 @@ void	bubblesort(t_t_o *num, int size)
 	}
 }
 
-t_i	intersection(float t, t_sp obj)
+t_i	intersection(double t, t_sp obj)
 {
 	t_i	i;
 

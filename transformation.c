@@ -12,7 +12,7 @@
 
 #include "rt.h"
 
-t_matrix	translation(float x, float y, float z)
+t_matrix	translation(double x, double y, double z)
 {
 	t_matrix	m;
 	int			i;
@@ -39,7 +39,7 @@ t_matrix	translation(float x, float y, float z)
 	return (m);
 }
 
-t_matrix	scaling(float x, float y, float z)
+t_matrix	scaling(double x, double y, double z)
 {
 	t_matrix	m;
 	int			i;
@@ -63,7 +63,7 @@ t_matrix	scaling(float x, float y, float z)
 	return (m);
 }
 
-t_matrix	rotation_x(float r)
+t_matrix	rotation_x(double r)
 {
 	t_matrix	m;
 	int			i;
@@ -89,7 +89,7 @@ t_matrix	rotation_x(float r)
 	return (m);
 }
 
-t_matrix	rotation_y(float r)
+t_matrix	rotation_y(double r)
 {
 	t_matrix	m;
 	int			i;
@@ -115,7 +115,7 @@ t_matrix	rotation_y(float r)
 	return (m);
 }
 
-t_matrix	rotation_z(float r)
+t_matrix	rotation_z(double r)
 {
 	t_matrix	m;
 	int			i;
@@ -141,7 +141,7 @@ t_matrix	rotation_z(float r)
 	return (m);
 }
 
-t_matrix	shearing(float x_y, float x_z, float y_x, float y_z, float z_x, float z_y)
+t_matrix	shearing(double x_y, double x_z, double y_x, double y_z, double z_x, double z_y)
 {
 	t_matrix	m;
 	/*int			i;
