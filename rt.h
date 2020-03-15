@@ -17,8 +17,8 @@
 # include <SDL.h>
 # include <math.h>
 
-# define WIN_W 1000
-# define WIN_H 1000
+# define WIN_W 100
+# define WIN_H 100
 # define EPSILON 0.00001
 
 typedef struct		s_matrix
@@ -39,6 +39,13 @@ typedef struct		s_color
 
 }					t_color;
 
+typedef struct		s_pattern
+{
+	t_color			a;
+	t_color			b;
+	t_matrix		transform;
+}					t_pattern;
+
 typedef struct		s_material
 {
 	t_color			color;
@@ -46,6 +53,9 @@ typedef struct		s_material
 	double			diffuse;
 	double			specular;
 	double			shininess;
+	int				pattern;
+	t_color			(*pattern_at)(t_pattern p, void *obj, t_vec pos);
+	t_pattern		p;
 
 }					t_material;
 
@@ -94,22 +104,29 @@ typedef struct		s_sp
 {
 	t_vec			c;
 	double			r;
-	t_color			color;
-	int				obj;
+	//t_color			color;
+	//int				obj;
 	t_matrix		transform;
 	t_material		m;
 }					t_sp;
 
+typedef struct		s_plane
+{
+	t_vec			c;
+	t_matrix		transform;
+	t_material		m;
+}					t_plane;
+
 typedef struct		s_i
 {
 	double			t;
-	t_sp			obj;
+	int				obj;
 }					t_i;
 
 typedef struct		s_comps
 {
 	double			t;
-	t_sp			obj;
+	int				obj;
 	t_vec			point;
 	t_vec			eyev;
 	t_vec			normalv;
@@ -130,12 +147,28 @@ typedef struct		s_ray
 	t_vec			d;	//Direction
 }					t_ray;
 
-typedef struct		s_world
+typedef struct s_world	t_world;
+typedef struct s_shape	t_shape;
+
+struct				s_shape
+{
+	void			*obj;
+	int				(*loc_norm)(void *obj, t_vec world_point, t_vec *n);
+	t_x_t			(*loc_intersect)(void *obj, t_ray r, t_x_t x, int obj_n);
+	t_color			(*loc_shade)(t_world w, t_comps c);
+};
+
+struct				s_world
 {
 	t_light			light;
 	t_sp			s[10];
+	int				s_obj;
+	t_plane			pl[10];
+	int				pl_obj;
 	int				max_obj;
-}					t_world;
+	t_shape			obj_ar[10];
+	int				ar_count;
+};
 
 typedef struct		s_sdl
 {
@@ -188,52 +221,69 @@ t_matrix			shearing(double x_y, double x_z, double y_x, double y_z, double z_x, 
 t_ray				set_ray(t_vec or, t_vec di);
 t_vec				position(t_ray r, double t);
 
-t_sp	set_sphere(int obj);
-t_x	intersect_sp(t_sp s, t_ray r, t_x x);
+t_sp				set_sphere(int obj);
+t_x_t				intersect_sp(void *v_s, t_ray r, t_x_t x, int obj_n);
 //t_x	intersect_sp(t_sp s, t_ray r);
 //t_xs				intersect_sp(t_sp s, t_ray r);
-t_matrix	set_transform(t_matrix s, t_matrix m);
+t_matrix			set_transform(t_matrix s, t_matrix m);
 
-t_ray	transform(t_ray r, t_matrix m);
+t_ray				transform(t_ray r, t_matrix m);
 
-t_matrix	identity_matrix(void);
+t_matrix			identity_matrix(void);
 
-void	raycast(t_sdl *sdl, t_ray r, int x, int y, t_world w);
+void				raycast(t_sdl *sdl, t_ray r, int x, int y, t_world w);
 //void	raycast(t_sdl *sdl);
 
 //light
-int		normal_at(t_sp obj, t_vec world_point, t_vec *n);
-//int		normal_at(t_matrix s, t_vec world_point, t_vec *n);
+
+int					normal_at_sp(void *v_s, t_vec world_point, t_vec *n);
 t_vec				reflect(t_vec in, t_vec normal);
 t_light				point_light(t_color color, t_vec pos);
 t_material			default_material(void);
-t_color	lighting(t_material m, t_light l, t_vec pos, t_vec eye, t_vec norm_v, int shadow);
+t_color				lighting(t_material m, t_world w, t_comps c);
 int					col_to_int(t_color c);
-int	c(double r, double g, double b);
+int					c(double r, double g, double b);
 
 //world
-void	default_world(t_world *w);
-t_x_t	intersect_world(t_world w, t_ray r);
-void	bubblesort(t_t_o *num, int size);
-t_i	intersection(double t, t_sp obj);
-t_comps	prepare_computations(t_i i, t_ray r);
+void				default_world(t_world *w);
+t_x_t	intersect_world(t_world w, t_ray r, t_x_t x);
+void				bubblesort(t_t_o *num, int size);
+t_i					intersection(double t, int obj);
+t_comps				prepare_computations(t_i i, t_ray r, t_world w);
 //shade
-t_color	shade_hit(t_world w, t_comps c);
-t_color	color_at(t_world w, t_ray r, int a, int b);
-int		hit(t_x_t x);
+t_color				shade_hit_sp(t_world w, t_comps c);
+t_color				color_at(t_world w, t_ray r, int a, int b);
+int					hit(t_x_t x);
 
 //view transform
-t_matrix	view_transform(t_vec from, t_vec to, t_vec up);
-t_matrix	default_view_transf(void);
+t_matrix			view_transform(t_vec from, t_vec to, t_vec up);
+t_matrix			default_view_transf(void);
 
 //camera
-t_camera    camera(double  hsize, double vsize, double fov);
-t_ray   ray_for_pixel(t_camera camera, int px, int py);
-void    render(t_sdl *sdl, t_camera camera, t_world world);
-t_x_t	t_to_h(t_x x, t_x_t x_t);
+t_camera			camera(double hsize, double vsize, double fov);
+t_ray				ray_for_pixel(t_camera camera, int px, int py);
+void				render(t_sdl *sdl, t_camera camera, t_world world);
 
 //shadow
-int	is_shadow(t_world w, t_vec	p);
+int					is_shadow(t_world w, t_vec	p);
+//shape
+t_vec				sp_normal_at(t_shape s, t_vec local_point);
+void				push_obj(void *obj, int (*loc_norm)(void *, t_vec, t_vec*),
+t_x_t (*loc_intersect)(void *, t_ray, t_x_t, int), t_color (*loc_shade)(t_world, t_comps), t_world *w);
 
+//plane
+int					normal_at_pl(void *v_s, t_vec world_point, t_vec *n);
+t_plane				set_plane();
+t_x_t				intersect_pl(void *v_s, t_ray r, t_x_t x, int obj_n);
+t_color				shade_hit_pl(t_world w, t_comps c);
+
+//patterns
+t_pattern			stripe_pattern(t_color a, t_color b);
+t_color stripe_at(t_pattern p, t_vec point);
+double  realmod(double x, double p);
+t_color	stripe_at_sp(t_pattern p, void *obj, t_vec wolrd_point);
+t_color	stripe_at_pl(t_pattern p, void *obj, t_vec wolrd_point);
+
+void    push_pat(t_color (*pattern_at)(t_pattern , void *, t_vec), t_world *w);
 
 #endif

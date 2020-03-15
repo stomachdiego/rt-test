@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRC = main.c vec_math.c vec.c color.c matrix.c transformation.c ray.c sphere.c light.c world.c camera.c
+SRC = main.c vec_math.c vec.c color.c matrix.c transformation.c ray.c sphere.c light.c world.c camera.c shape.c plane.c patterns.c
 
 OBJ = $(SRC:.c=.o)
 

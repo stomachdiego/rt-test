@@ -142,73 +142,6 @@ void	alg(t_sdl *sdl, t_world w)
 	}
 }
 
-/*void	raycast(t_sdl *sdl, t_ray r, int x, int y, t_world w)
-{
-	t_color	c;
-
-	c = color_at(w, r);
-	sdl->img[y * WIN_W + x] = col_to_int(c);
-}*/
-
-//void	raycast(t_sdl *sdl)
-/*void	raycast(t_sdl *sdl, t_ray r, int x, int y)
-{
-	t_sp	s;
-	t_sp	s1;
-	int		obj;
-	t_xs	xs;
-	t_color sp = {1, 0, 0};
-	t_color l_c = {1, 1, 1};
-
-	obj = 0;
-	//t_ray r = set_ray(set_v_p(0,0,-5,1), set_v_p(0,0,1,0));
-	s = set_sphere(set_v_p(0,0,0,1), 1, sp, obj);
-	s.m.color = color(1, 0.2, 1);
-	s.m.ambient = 0;
-	t_light light = point_light(l_c, set_v_p(-10, 10, -10, 1));
-	//t_matrix m = matrix_mult(scaling(1, 0.5, 1), rotation_z(M_PI / 5));
-	//t_matrix m = translation(0,1,0);
-	//s.transform = set_transform(s.transform, m);
-
-	//s.transform = set_transform(s.transform,scaling(1,0.5,1));
-	xs = intersect_sp(s, r);
-	
-
-	int hit_obj = hit(xs);
-	
-	if (hit_obj != -1)
-	{	
-		t_vec	point = position(r, xs.t1[hit_obj]);
-		t_vec	normal;
-		t_color color_l;
-		if (normal_at(xs.tr[hit_obj], point, &normal) == 0)
-			printf("normal error");
-		else
-		{
-			t_vec	eye = neg(r.d);
-			color_l = lighting(xs.m[hit_obj], light, point, eye, normal);
-			sdl->img[y * WIN_W + x] = col_to_int(color_l);
-		}
-		/*int i = 0;
-		while (i < obj)
-		{
-			printf("xs.count = %i\n", xs.count[i]);
-			if (xs.count[i] != 0)
-			{
-				printf("xs[0] = %f\n", xs.t1[i]);
-				printf("xs[1] = %f\n", xs.t2[i]);
-				printf("obj = %i\n\n", xs.obj[i]);
-			}
-			i++;
-		}*/
-	/*}
-	else
-	{
-		t_color black = {0,0,0};
-		sdl->img[y * WIN_W + x] = col_to_int(black);
-	}
-}*/
-
 int		main(void)
 {
 	t_sdl		sdl;
@@ -219,9 +152,8 @@ int		main(void)
 	
 	sdl.run = 0;
 
-
 //WORLD
-	//floor
+	/*//floor
 	w.s[0] = set_sphere(0);
 	w.s[0].transform = scaling(10,0.01,10);
 	w.s[0].m.color = color(1, 0.9, 0.9);
@@ -239,13 +171,38 @@ int		main(void)
 	w.s[2].transform = matrix_mult(w.s[2].transform, rotation_x(M_PI / 2));
 	w.s[2].transform = matrix_mult(w.s[2].transform, scaling(10, 0.01, 10));
 	w.s[2].m.color = color(1, 0.9, 0.9);
-	w.s[2].m.specular = 0;
+	w.s[2].m.specular = 0;*/
+
+	//floor
+	w.pl[0] = set_plane(0);
+	w.pl[0].m.color = color(1, 0.9, 0.9);
+	w.pl[0].m.specular = 0;
+	w.pl[0].m.pattern = 1;
+	//push_pat(&stripe_at_pl, &w);
+	w.pl[0].m.pattern_at = &stripe_at_pl;
+	w.pl[0].m.p = stripe_pattern(color(1,1,1), color(0,0,0));
+	w.pl[0].m.p.transform = scaling(0.2, 0.2, 0.2);
+	w.pl[0].m.p.transform = matrix_mult(w.pl[0].m.p.transform, rotation_y(M_PI / 2));
+	//задняя стена 
+	w.pl[1] = set_plane(1);
+	w.pl[1].transform = matrix_mult(w.pl[1].transform, translation(0, 0, 4));
+	w.pl[1].transform = matrix_mult(w.pl[1].transform, rotation_x(M_PI / 2));
+	w.pl[1].m.color = color(1, 0.5, 0.5);
+	w.pl[1].m.specular = 0;
+	//потолок 
+	w.pl[2] = set_plane(2);
+	//w.pl[2].transform = matrix_mult(w.pl[2].transform, rotation_x(M_PI / 2));
+	w.pl[2].transform = matrix_mult(w.pl[2].transform, translation(0, 3, 0));
+	w.pl[2].m.color = color(0.9, 0.5, 0.9);
+	w.pl[2].m.specular = 0;
 	//middle
 	w.s[3] = set_sphere(3);
 	w.s[3].transform = translation(-0.5, 1, 0.5);
 	w.s[3].m.color = color(0.1, 1, 0.5);
 	w.s[3].m.specular = 0.3;
 	w.s[3].m.diffuse = 0.7;
+	//w.s[3].m.pattern = 1;
+	//w.s[3].m.p = stripe_pattern(color(1,1,1), color(0,0,0));
 	//right
 	w.s[4] = set_sphere(4);
 	w.s[4].transform = matrix_mult(translation(1.5, 0.5, -0.5), scaling(0.5, 0.5, 0.5));
@@ -259,13 +216,25 @@ int		main(void)
 	w.s[5].m.specular = 0.3;
 	w.s[5].m.diffuse = 0.7;
 	//light
-	w.light = point_light(color(1, 1, 1), set_v_p(-10, 10, -10, 1));
+	w.light = point_light(color(1, 1, 1), set_v_p(-10, 2, -10, 1));
+	w.s_obj = 3;
+	w.pl_obj = 3;
 	w.max_obj = 6;
+	int i = 0;
+	while (i < w.pl_obj)
+	{
+		push_obj((void*)(&w.pl[i++]), &normal_at_pl, &intersect_pl, &shade_hit_pl, &w);
+	}
+	while (i < w.max_obj)
+	{
+		push_obj((void*)(&w.s[i++]), &normal_at_sp, &intersect_sp, &shade_hit_sp, &w);
+	}
 //WORLD
 
 	//camera
 	t_camera c = camera(WIN_W, WIN_H, M_PI / 3);
 	c.transform = view_transform(set_v_p(0, 1.5, -5, 1), set_v_p(0, 1, 0, 1), set_v_p(0, 1, 0, 0));
+	
 	render(&sdl, c, w);
 	
 /*
@@ -314,6 +283,54 @@ int		main(void)
 	printf("r %f\n", col.b);
 	*/
 	
+
+	
+
+
+	/*t_matrix tr = translation(2,3,4);
+	if (identic_m_4(s.transform, tr) == 1)
+		printf(" tr yes\n");
+	else
+		printf(" tr false\n");
+	t_material m;
+	m = s.m;*/
+
+	/*t_plane p;
+	p = set_plane();
+	t_vec	norm;*/
+
+	/*t_color white = color(1,1,1);
+	t_color black = color(0,0,0);
+	t_pattern p = stripe_pattern(white, black);
+	t_color result;
+
+	result = stripe_at(p, set_v_p(0,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+	result = stripe_at(p, set_v_p(0.9,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+	result = stripe_at(p, set_v_p(1,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+	result = stripe_at(p, set_v_p(-0.1,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+	result = stripe_at(p, set_v_p(-1,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+	result = stripe_at(p, set_v_p(-1.1,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+
+	printf("mod = %f\n", realmod(-0.1, 2));*/
+
 	SDL_UpdateTexture(sdl.text, NULL, sdl.img, WIN_W * (sizeof(int)));
 	SDL_RenderClear(sdl.ren);
 	SDL_RenderCopy(sdl.ren, sdl.text, NULL, NULL);

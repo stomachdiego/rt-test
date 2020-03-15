@@ -1,96 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   sphere.c                                           :+:      :+:    :+:   */
+/*   plane.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sdiego <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/02/26 14:54:30 by sdiego            #+#    #+#             */
-/*   Updated: 2020/02/26 14:54:31 by sdiego           ###   ########.fr       */
+/*   Created: 2020/03/11 15:54:55 by sdiego            #+#    #+#             */
+/*   Updated: 2020/03/11 15:54:57 by sdiego           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rt.h"
 
-t_sp	set_sphere(int obj)
+t_plane set_plane()
 {
-	t_sp	s;
+	t_plane s;
 
 	s.c = set_v_p(0, 0, 0, 1);
-	s.r = 1;
-	//s.color = color;
-	//s.obj = obj;
+	//s.r = 1;
 	s.transform = identity_matrix();
 	s.m = default_material();
 	return (s);
 }
 
-t_x_t	intersect_sp(void *v_s, t_ray r, t_x_t x, int obj_n)
+int		normal_at_pl(void *v_s, t_vec world_point, t_vec *n)
 {
-	double	a;
-	double	b;
-	double	c;
-	t_vec	sp_to_ray;
-	double	disc;
-	t_ray	ray2;
-	t_sp	*s;
-	t_t_o	temp;
-
-	s = (t_sp*)v_s;
-
-	if (matrix_inverse_test(s->transform) == 1)
-	{
-		ray2 = transform(r, matrix_inverse(s->transform));
-
-		sp_to_ray = sub(ray2.o, s->c);
-
-		a = dot(ray2.d, ray2.d);
-		b = 2 * dot(ray2.d, sp_to_ray);
-		c = dot(sp_to_ray, sp_to_ray) - 1;
-
-		disc = (b * b) - 4 * a * c;
-
-		if (disc < 0)
-		{
-			//x.max_obj = x.max_obj + 2;
-			return (x);
-		}
-		else
-		{
-			x.t[x.max_obj].t = ((-b - sqrt(disc)) / (2 * a));
-			x.t[x.max_obj].obj = obj_n;
-			x.t[x.max_obj].count = 2;
-			x.max_obj = x.max_obj + 1;
-			x.t[x.max_obj].t = ((-b + sqrt(disc)) / (2 * a));
-			x.t[x.max_obj].obj = obj_n;
-			x.t[x.max_obj].count = 2;
-			x.max_obj = x.max_obj + 1;
-			/*if (x.t[x.max_obj - 1].t > x.t[x.max_obj].t)
-			{
-				temp = x.t[x.max_obj - 1];
-				x.t[x.max_obj - 1] = x.t[x.max_obj];
-				x.t[x.max_obj] = temp;
-			}*/
-			//x.max_obj = x.max_obj + 1;
-			return (x);
-		}
-	}
-	printf("matrix_inverse_test error in intersect_sp\n");
-	//x.max_obj = x.max_obj + 2;
-	return(x);
-}
-
-int		normal_at_sp(void *v_s, t_vec world_point, t_vec *n)
-{
-	t_sp	*s;
-	t_vec object_point;
-	t_vec object_normal;
+	t_plane *s;
+	t_vec   object_point;
+	t_vec   object_normal;
 	t_vec	world_normal;
-	s = (t_sp*)v_s;
+	s = (t_plane*)v_s;
 	if (matrix_inverse_test(s->transform) == 1)
 	{
 		object_point = matrix_mult_v_p(matrix_inverse(s->transform), world_point);
-		object_normal = sub(object_point, set_v_p(0, 0, 0, 1));
+		object_normal = set_v_p(0,1,0,0);
 		world_normal = matrix_mult_v_p(matrix_transposing(matrix_inverse(s->transform)), object_normal);
 		world_normal.c[3] = 0;
 		*n = normalize(world_normal);
@@ -100,31 +43,54 @@ int		normal_at_sp(void *v_s, t_vec world_point, t_vec *n)
 	return(0);
 }
 
-t_color	shade_hit_sp(t_world w, t_comps c)
+t_x_t	intersect_pl(void *v_s, t_ray r, t_x_t x, int obj_n)
+{
+	double	a;
+	double	b;
+	double	c;
+	t_vec	sp_to_ray;
+	double	disc;
+	t_ray	ray2;
+	t_plane *s;
+
+	s = (t_plane*)v_s;
+
+	if (matrix_inverse_test(s->transform) == 1)
+	{
+		ray2 = transform(r, matrix_inverse(s->transform));
+
+		if (fabs(ray2.d.c[1]) < EPSILON)
+        {
+            //x.max_obj = x.max_obj + 1;
+            return (x);
+        }
+        x.t[x.max_obj].t = -ray2.o.c[1] / ray2.d.c[1];
+		x.t[x.max_obj].obj = obj_n;
+		x.t[x.max_obj].count = 2;
+		x.max_obj = x.max_obj + 1;
+        return (x);
+	}
+	printf("matrix_inverse_test error in intersect_sp\n");
+	//x.max_obj = x.max_obj + 1;
+	return(x);
+}
+
+t_color	shade_hit_pl(t_world w, t_comps c)
 {
 	c.shadow = is_shadow(w, c.over_point);
-	t_sp *s;
-	s = (t_sp*)w.obj_ar[c.obj].obj;
+	t_plane *s;
+	s = (t_plane*)w.obj_ar[c.obj].obj;
 	return (lighting(s->m, w, c));
+	//return (color(0,0,0));
 }
 
-t_vec	reflect(t_vec in, t_vec normal)
-{
-	t_vec a;
-	t_vec b;
-
-	b = mult(normal, (2 * dot(in, normal)));
-	a = sub(in, b);
-	return(a);
-}
-
-t_color	stripe_at_sp(t_pattern p, void *obj, t_vec wolrd_point)
+t_color	stripe_at_pl(t_pattern p, void *obj, t_vec wolrd_point)
 {
 	t_vec	obj_point;
 	t_vec	pattern_point;
-	t_sp	*s;
+	t_plane	*s;
 
-	s = (t_sp*)obj;
+	s = (t_plane*)obj;
 	if (matrix_inverse_test(s->transform) == 1)
 		obj_point = matrix_mult_v_p(matrix_inverse(s->transform), wolrd_point);
 	else
@@ -136,7 +102,7 @@ t_color	stripe_at_sp(t_pattern p, void *obj, t_vec wolrd_point)
 	return(stripe_at(p, pattern_point));
 }
 
-/*t_color	lighting_sp(t_material m, t_world w, t_comps c)
+/*t_color	lighting_pl(t_material m, t_world w, t_comps c)
 {
 	t_color	effective_color;
 	t_vec	light_v;
