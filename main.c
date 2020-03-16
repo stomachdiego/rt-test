@@ -27,7 +27,7 @@ int		quit(t_sdl *sdl)
 	return(0);
 }
 
-int	clear_map(t_sdl *sdl)
+int	clear_img(t_sdl *sdl)
 {
 	if (SDL_SetRenderDrawColor(sdl->ren, 0x00, 0x00, 0x00, 0x00) == -1)
 	{
@@ -172,28 +172,28 @@ int		main(void)
 	w.s[2].transform = matrix_mult(w.s[2].transform, scaling(10, 0.01, 10));
 	w.s[2].m.color = color(1, 0.9, 0.9);
 	w.s[2].m.specular = 0;*/
-
+/*
 	//floor
 	w.pl[0] = set_plane(0);
 	w.pl[0].m.color = color(1, 0.9, 0.9);
 	w.pl[0].m.specular = 0;
 	w.pl[0].m.pattern = 1;
-	//push_pat(&stripe_at_pl, &w);
-	w.pl[0].m.pattern_at = &stripe_at_pl;
-	w.pl[0].m.p = stripe_pattern(color(1,1,1), color(0,0,0));
-	w.pl[0].m.p.transform = scaling(0.2, 0.2, 0.2);
-	w.pl[0].m.p.transform = matrix_mult(w.pl[0].m.p.transform, rotation_y(M_PI / 2));
+	stripe_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[0]);
+	w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, scaling(0.2, 0.2, 0.2));
+	w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, rotation_y(M_PI / 2));
 	//задняя стена 
 	w.pl[1] = set_plane(1);
 	w.pl[1].transform = matrix_mult(w.pl[1].transform, translation(0, 0, 4));
 	w.pl[1].transform = matrix_mult(w.pl[1].transform, rotation_x(M_PI / 2));
 	w.pl[1].m.color = color(1, 0.5, 0.5);
 	w.pl[1].m.specular = 0;
+	checker_pattern_pl(color(1,1,1), color(1,0.5,0.5), &w.pl[1]);
 	//потолок 
 	w.pl[2] = set_plane(2);
 	//w.pl[2].transform = matrix_mult(w.pl[2].transform, rotation_x(M_PI / 2));
 	w.pl[2].transform = matrix_mult(w.pl[2].transform, translation(0, 3, 0));
 	w.pl[2].m.color = color(0.9, 0.5, 0.9);
+	ring_pattern_pl(color(1,1,1), color(0.9,0.5,0.9), &w.pl[2]);
 	w.pl[2].m.specular = 0;
 	//middle
 	w.s[3] = set_sphere(3);
@@ -201,6 +201,12 @@ int		main(void)
 	w.s[3].m.color = color(0.1, 1, 0.5);
 	w.s[3].m.specular = 0.3;
 	w.s[3].m.diffuse = 0.7;
+	gradient_pattern_sp(color(1,1,1), color(0.1,1,0.5), &w.s[3]);
+	//w.s[3].m.p.transform = matrix_mult(w.s[3].m.p.transform, scaling(2, 1, 1));
+	//w.s[3].m.p.transform = matrix_mult(w.s[3].m.p.transform, translation(-0.5,0,0));
+	w.s[3].m.p.transform = set_transform(w.s[3].m.p.transform, translation(-0.5,0,0));
+	w.s[3].m.p.transform = set_transform(w.s[3].m.p.transform, scaling(2, 1, 1));
+	//w.s[3].m.p.transform = set_transform(w.s[3].m.p.transform, translation(-0.5,0,0));
 	//w.s[3].m.pattern = 1;
 	//w.s[3].m.p = stripe_pattern(color(1,1,1), color(0,0,0));
 	//right
@@ -209,12 +215,15 @@ int		main(void)
 	w.s[4].m.color = color(0.5, 1, 0.1);
 	w.s[4].m.specular = 0.3;
 	w.s[4].m.diffuse = 0.7;
+	checker_pattern_sp(color(1,1,1), color(0.5,1,0.1), &w.s[4]);
 	//left
 	w.s[5] = set_sphere(5);
 	w.s[5].transform = matrix_mult(translation(-1.5, 0.33, -0.75), scaling(0.33, 0.33, 0.33));
 	w.s[5].m.color = color(1, 0.8, 0.1);
 	w.s[5].m.specular = 0.3;
 	w.s[5].m.diffuse = 0.7;
+	ring_pattern_sp(color(1,1,1), color(0,0,0), &w.s[5]);
+	w.s[5].m.p.transform = set_transform(w.s[5].m.p.transform, scaling(0.2, 1, 0.2));
 	//light
 	w.light = point_light(color(1, 1, 1), set_v_p(-10, 2, -10, 1));
 	w.s_obj = 3;
@@ -236,7 +245,7 @@ int		main(void)
 	c.transform = view_transform(set_v_p(0, 1.5, -5, 1), set_v_p(0, 1, 0, 1), set_v_p(0, 1, 0, 0));
 	
 	render(&sdl, c, w);
-	
+	*/
 /*
 	w.light = point_light(color(1, 1, 1), set_v_p(0, 0, -10, 1));
 	
@@ -330,6 +339,13 @@ int		main(void)
 	printf("b = %f\n\n", result.b);
 
 	printf("mod = %f\n", realmod(-0.1, 2));*/
+	/*t_sp sp;
+	ring_pattern_sp(color(1,1,1), color(0,0,0), &sp);
+	t_color result;
+	result = stripe_at(sp.m.p, set_v_p(0,0,0,1));
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);*/
 
 	SDL_UpdateTexture(sdl.text, NULL, sdl.img, WIN_W * (sizeof(int)));
 	SDL_RenderClear(sdl.ren);
@@ -345,7 +361,7 @@ int		main(void)
 				key_press(&m);
 			if (sdl.e.type == SDL_MOUSEMOTION)
 				mouse_move(&m);*/
-			/*if (clear_map(&sdl) != 0)
+			/*if (clear_img(&sdl) != 0)
 				sdl.run = 1;
 			if (raycast(&sdl) != 0)
 				sdl.run = 1;

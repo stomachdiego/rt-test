@@ -31,6 +31,7 @@ t_material	default_material(void)
 	m.diffuse = 0.9;
 	m.specular = 0.9;
 	m.shininess = 200;
+	m.reflective = 0;
 	m.pattern = 0;
 	return (m);
 }

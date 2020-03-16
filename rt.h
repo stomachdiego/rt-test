@@ -53,6 +53,7 @@ typedef struct		s_material
 	double			diffuse;
 	double			specular;
 	double			shininess;
+	double			reflective;
 	int				pattern;
 	t_color			(*pattern_at)(t_pattern p, void *obj, t_vec pos);
 	t_pattern		p;
@@ -130,6 +131,7 @@ typedef struct		s_comps
 	t_vec			point;
 	t_vec			eyev;
 	t_vec			normalv;
+	t_vec			reflectv;
 	int				inside;
 	int				shadow;
 	t_vec			over_point;
@@ -278,12 +280,27 @@ t_x_t				intersect_pl(void *v_s, t_ray r, t_x_t x, int obj_n);
 t_color				shade_hit_pl(t_world w, t_comps c);
 
 //patterns
-t_pattern			stripe_pattern(t_color a, t_color b);
+void   stripe_pattern_pl(t_color a, t_color b, t_plane *pl);
+void   stripe_pattern_sp(t_color a, t_color b, t_sp *s);
 t_color stripe_at(t_pattern p, t_vec point);
 double  realmod(double x, double p);
 t_color	stripe_at_sp(t_pattern p, void *obj, t_vec wolrd_point);
 t_color	stripe_at_pl(t_pattern p, void *obj, t_vec wolrd_point);
-
-void    push_pat(t_color (*pattern_at)(t_pattern , void *, t_vec), t_world *w);
+//void    push_pat(t_color (*pattern_at)(t_pattern , void *, t_vec), t_world *w);
+t_color gradient_at(t_pattern p, t_vec point);
+t_color	gradient_at_pl(t_pattern p, void *obj, t_vec wolrd_point);
+t_color	gradient_at_sp(t_pattern p, void *obj, t_vec wolrd_point);
+void   gradient_pattern_sp(t_color a, t_color b, t_sp *s);
+void   gradient_pattern_pl(t_color a, t_color b, t_plane *pl);
+t_color	ring_at_sp(t_pattern p, void *obj, t_vec wolrd_point);
+t_color ring_at(t_pattern p, t_vec point);
+t_color	ring_at_pl(t_pattern p, void *obj, t_vec wolrd_point);
+void   ring_pattern_sp(t_color a, t_color b, t_sp *s);
+void   ring_pattern_pl(t_color a, t_color b, t_plane *pl);
+t_color checker_at(t_pattern p, t_vec point);
+t_color	checker_at_sp(t_pattern p, void *obj, t_vec wolrd_point);
+t_color	checker_at_pl(t_pattern p, void *obj, t_vec wolrd_point);
+void   checker_pattern_pl(t_color a, t_color b, t_plane *pl);
+void   checker_pattern_sp(t_color a, t_color b, t_sp *s);
 
 #endif

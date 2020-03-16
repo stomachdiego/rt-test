@@ -102,48 +102,56 @@ t_color	stripe_at_pl(t_pattern p, void *obj, t_vec wolrd_point)
 	return(stripe_at(p, pattern_point));
 }
 
-/*t_color	lighting_pl(t_material m, t_world w, t_comps c)
+t_color	gradient_at_pl(t_pattern p, void *obj, t_vec wolrd_point)
 {
-	t_color	effective_color;
-	t_vec	light_v;
-	t_color ambient;
-	double	light_dot_normal;
-	t_color	diffuse;
-	t_color specular;
-	t_vec	reflect_v;
-	double	reflect_dot_eye;
-	double	factor;
+	t_vec	obj_point;
+	t_vec	pattern_point;
+	t_plane	*s;
 
-	if (m.pattern == 1)
-		m.color = (*m.p.pattern_at)(m.p, w.obj_ar[c.obj].obj, c.point);
-	
-	effective_color = hadamard_prod(m.color, w.light.intensity);
-	light_v = normalize(sub(w.light.pos, c.point));
-	ambient = mult_col(effective_color, m.ambient);
-	light_dot_normal = dot(light_v, c.normalv);
-	if (c.shadow == 0)
-	{
-		if (light_dot_normal < 0)
-		{
-			diffuse = color(0,0,0);
-			specular = color(0,0,0);
-		}
-		else
-		{
-			diffuse = mult_col(mult_col(effective_color, m.diffuse), light_dot_normal);
-	
-			reflect_v = reflect(neg(light_v), c.normalv);
-			reflect_dot_eye = dot(reflect_v, c.eyev);
-			if (reflect_dot_eye <= 0)
-				specular = color(0,0,0);
-			else
-			{
-				factor = powf(reflect_dot_eye, m.shininess);
-				specular = mult_col(mult_col(w.light.intensity, m.specular), factor);
-			}
-		}
-		return (add_col(add_col(ambient, diffuse), specular));
-	}
+	s = (t_plane*)obj;
+	if (matrix_inverse_test(s->transform) == 1)
+		obj_point = matrix_mult_v_p(matrix_inverse(s->transform), wolrd_point);
 	else
-		return(ambient);
-}*/
+		printf("matrix s stripe_at_sp error\n");
+	if (matrix_inverse_test(p.transform) == 1)
+		pattern_point = matrix_mult_v_p(matrix_inverse(p.transform), obj_point);
+	else
+		printf("matrix p stripe_at_sp error\n"); 
+	return(gradient_at(p, pattern_point));
+}
+
+t_color	ring_at_pl(t_pattern p, void *obj, t_vec wolrd_point)
+{
+	t_vec	obj_point;
+	t_vec	pattern_point;
+	t_plane	*s;
+
+	s = (t_plane*)obj;
+	if (matrix_inverse_test(s->transform) == 1)
+		obj_point = matrix_mult_v_p(matrix_inverse(s->transform), wolrd_point);
+	else
+		printf("matrix s stripe_at_sp error\n");
+	if (matrix_inverse_test(p.transform) == 1)
+		pattern_point = matrix_mult_v_p(matrix_inverse(p.transform), obj_point);
+	else
+		printf("matrix p stripe_at_sp error\n"); 
+	return(ring_at(p, pattern_point));
+}
+
+t_color	checker_at_pl(t_pattern p, void *obj, t_vec wolrd_point)
+{
+	t_vec	obj_point;
+	t_vec	pattern_point;
+	t_plane	*s;
+
+	s = (t_plane*)obj;
+	if (matrix_inverse_test(s->transform) == 1)
+		obj_point = matrix_mult_v_p(matrix_inverse(s->transform), wolrd_point);
+	else
+		printf("matrix s stripe_at_sp error\n");
+	if (matrix_inverse_test(p.transform) == 1)
+		pattern_point = matrix_mult_v_p(matrix_inverse(p.transform), obj_point);
+	else
+		printf("matrix p stripe_at_sp error\n"); 
+	return(checker_at(p, pattern_point));
+}
