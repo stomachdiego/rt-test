@@ -120,10 +120,10 @@ t_color	lighting(t_material m, t_world w, t_comps c)
 	double	factor;
 
 	if (m.pattern == 1)
-		m.color = (*m.pattern_at)(m.p, w.obj_ar[c.obj].obj, c.point);
+		m.color = (*m.pattern_at)(m.p, w.obj_ar[c.obj].obj, c.over_point);
 	
 	effective_color = hadamard_prod(m.color, w.light.intensity);
-	light_v = normalize(sub(w.light.pos, c.point));
+	light_v = normalize(sub(w.light.pos, c.over_point));
 	ambient = mult_col(effective_color, m.ambient);
 	light_dot_normal = dot(light_v, c.normalv);
 	if (c.shadow == 0)

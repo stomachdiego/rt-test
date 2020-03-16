@@ -100,12 +100,17 @@ int		normal_at_sp(void *v_s, t_vec world_point, t_vec *n)
 	return(0);
 }
 
-t_color	shade_hit_sp(t_world w, t_comps c)
+t_color	shade_hit_sp(t_world w, t_comps c, int remaining)
 {
-	c.shadow = is_shadow(w, c.over_point);
-	t_sp *s;
+	t_color surface;
+	t_color	reflected;
+	t_sp	*s;
+
 	s = (t_sp*)w.obj_ar[c.obj].obj;
-	return (lighting(s->m, w, c));
+	c.shadow = is_shadow(w, c.over_point);
+	surface = lighting(s->m, w, c);
+	reflected = reflected_color(w, c, remaining);
+	return (add_col(surface, reflected));
 }
 
 t_vec	reflect(t_vec in, t_vec normal)

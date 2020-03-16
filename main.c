@@ -151,9 +151,9 @@ int		main(void)
 		quit(&sdl);
 	
 	sdl.run = 0;
-
+/*
 //WORLD
-	/*//floor
+	//floor
 	w.s[0] = set_sphere(0);
 	w.s[0].transform = scaling(10,0.01,10);
 	w.s[0].m.color = color(1, 0.9, 0.9);
@@ -172,28 +172,38 @@ int		main(void)
 	w.s[2].transform = matrix_mult(w.s[2].transform, scaling(10, 0.01, 10));
 	w.s[2].m.color = color(1, 0.9, 0.9);
 	w.s[2].m.specular = 0;*/
-/*
+
 	//floor
 	w.pl[0] = set_plane(0);
-	w.pl[0].m.color = color(1, 0.9, 0.9);
+	w.pl[0].m.color = color(1, 0, 0);
 	w.pl[0].m.specular = 0;
-	w.pl[0].m.pattern = 1;
-	stripe_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[0]);
-	w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, scaling(0.2, 0.2, 0.2));
-	w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, rotation_y(M_PI / 2));
+	w.pl[0].m.reflective = 0.2;
+	checker_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[0]);
+	//w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, translation(0, 0, 0));
+	//stripe_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[0]);
+	//gradient_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[0]);
+	//ring_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[0]);
+	//w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, scaling(0.2, 0.2, 0.2));
+	//w.pl[0].m.p.transform = set_transform(w.pl[0].m.p.transform, rotation_y(M_PI / 2));
+	
 	//задняя стена 
 	w.pl[1] = set_plane(1);
 	w.pl[1].transform = matrix_mult(w.pl[1].transform, translation(0, 0, 4));
 	w.pl[1].transform = matrix_mult(w.pl[1].transform, rotation_x(M_PI / 2));
 	w.pl[1].m.color = color(1, 0.5, 0.5);
 	w.pl[1].m.specular = 0;
-	checker_pattern_pl(color(1,1,1), color(1,0.5,0.5), &w.pl[1]);
+	stripe_pattern_pl(color(1,1,1), color(1,0.5,0.5), &w.pl[1]);
+	w.pl[1].m.p.transform = set_transform(w.pl[1].m.p.transform, scaling(0.2, 0.2, 0.2));
+	w.pl[1].m.p.transform = set_transform(w.pl[1].m.p.transform, rotation_y(M_PI / 2));
+	//checker_pattern_pl(color(1,1,1), color(1,0.5,0.5), &w.pl[1]);
 	//потолок 
 	w.pl[2] = set_plane(2);
 	//w.pl[2].transform = matrix_mult(w.pl[2].transform, rotation_x(M_PI / 2));
 	w.pl[2].transform = matrix_mult(w.pl[2].transform, translation(0, 3, 0));
 	w.pl[2].m.color = color(0.9, 0.5, 0.9);
-	ring_pattern_pl(color(1,1,1), color(0.9,0.5,0.9), &w.pl[2]);
+	w.pl[2].m.reflective = 0.1;
+	//checker_pattern_pl(color(1,1,1), color(0,0,0), &w.pl[2]);
+	ring_pattern_pl(color(1,1,1), color(1,0,0), &w.pl[2]);
 	w.pl[2].m.specular = 0;
 	//middle
 	w.s[3] = set_sphere(3);
@@ -201,11 +211,11 @@ int		main(void)
 	w.s[3].m.color = color(0.1, 1, 0.5);
 	w.s[3].m.specular = 0.3;
 	w.s[3].m.diffuse = 0.7;
-	gradient_pattern_sp(color(1,1,1), color(0.1,1,0.5), &w.s[3]);
-	//w.s[3].m.p.transform = matrix_mult(w.s[3].m.p.transform, scaling(2, 1, 1));
-	//w.s[3].m.p.transform = matrix_mult(w.s[3].m.p.transform, translation(-0.5,0,0));
+	w.s[3].m.reflective = 0.7;
+/*	gradient_pattern_sp(color(1,1,1), color(0.1,1,0.5), &w.s[3]);
 	w.s[3].m.p.transform = set_transform(w.s[3].m.p.transform, translation(-0.5,0,0));
 	w.s[3].m.p.transform = set_transform(w.s[3].m.p.transform, scaling(2, 1, 1));
+*/
 	//w.s[3].m.p.transform = set_transform(w.s[3].m.p.transform, translation(-0.5,0,0));
 	//w.s[3].m.pattern = 1;
 	//w.s[3].m.p = stripe_pattern(color(1,1,1), color(0,0,0));
@@ -222,8 +232,8 @@ int		main(void)
 	w.s[5].m.color = color(1, 0.8, 0.1);
 	w.s[5].m.specular = 0.3;
 	w.s[5].m.diffuse = 0.7;
-	ring_pattern_sp(color(1,1,1), color(0,0,0), &w.s[5]);
-	w.s[5].m.p.transform = set_transform(w.s[5].m.p.transform, scaling(0.2, 1, 0.2));
+//	ring_pattern_sp(color(1,1,1), color(0,0,0), &w.s[5]);
+//	w.s[5].m.p.transform = set_transform(w.s[5].m.p.transform, scaling(0.2, 1, 0.2));
 	//light
 	w.light = point_light(color(1, 1, 1), set_v_p(-10, 2, -10, 1));
 	w.s_obj = 3;
@@ -232,11 +242,13 @@ int		main(void)
 	int i = 0;
 	while (i < w.pl_obj)
 	{
-		push_obj((void*)(&w.pl[i++]), &normal_at_pl, &intersect_pl, &shade_hit_pl, &w);
+		push_obj((void*)(&w.pl[i]), &normal_at_pl, &intersect_pl, &shade_hit_pl, &w, &w.pl[i].m);
+		i++;
 	}
 	while (i < w.max_obj)
 	{
-		push_obj((void*)(&w.s[i++]), &normal_at_sp, &intersect_sp, &shade_hit_sp, &w);
+		push_obj((void*)(&w.s[i]), &normal_at_sp, &intersect_sp, &shade_hit_sp, &w, &w.s[i].m);
+		i++;
 	}
 //WORLD
 
@@ -245,7 +257,7 @@ int		main(void)
 	c.transform = view_transform(set_v_p(0, 1.5, -5, 1), set_v_p(0, 1, 0, 1), set_v_p(0, 1, 0, 0));
 	
 	render(&sdl, c, w);
-	*/
+	
 /*
 	w.light = point_light(color(1, 1, 1), set_v_p(0, 0, -10, 1));
 	
@@ -347,6 +359,59 @@ int		main(void)
 	printf("g = %f\n", result.g);
 	printf("b = %f\n\n", result.b);*/
 
+//	default_world(&w);
+
+	/*w.light = point_light(color(1,1,1), set_v_p(0,0,0,1));
+	w.pl[0] = set_plane();
+	w.pl[0].m.reflective = 1;
+	w.pl[0].transform = translation(0,-1,0);
+
+	w.pl[1] = set_plane();
+	w.pl[1].m.reflective = 1;
+	w.pl[1].transform = translation(0,1,0);
+	w.max_obj = 2;
+	int i = 0;
+	while (i < w.max_obj)
+	{
+		push_obj((void*)(&w.pl[i]), &normal_at_pl, &intersect_pl, &shade_hit_pl, &w, &w.pl[i].m);
+		i++;
+	}
+	t_ray r = set_ray(set_v_p(0,0,0,1), set_v_p(0,1,0,0));
+	t_color result = color_at(w, r);
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);*/
+
+//	w.s[0].m.ambient = 1;
+	/*w.pl[3] = set_plane();
+	w.pl[3].m.reflective = 0.5;
+	w.pl[3].transform = matrix_mult(w.pl[3].transform, translation(0, -1, 0));
+	push_obj((void*)(&w.pl[3]), &normal_at_pl, &intersect_pl, &shade_hit_pl, &w, &w.pl[3].m);*/
+	
+	//w.pl[0] = set_plane();
+	//push_obj((void*)(&w.pl[0]), &normal_at_pl, &intersect_pl, &shade_hit_pl, &w);
+
+/*
+	t_ray r = set_ray(set_v_p(0,0,-3,1), set_v_p(0, -sqrt(2)/2, sqrt(2)/2, 0));
+
+	t_i i = intersection(sqrt(2), 2);
+	t_comps c = prepare_computations(i, r, w);
+
+	t_color result;
+	
+	//result = shade_hit_pl(w, c);
+	result = reflected_color(w, c, 0);
+
+	printf("r = %f\n", result.r);
+	printf("g = %f\n", result.g);
+	printf("b = %f\n\n", result.b);
+
+*/	
+	/*
+	printf("0 = %f\n", c.reflectv.c[0]);
+	printf("1 = %f\n", c.reflectv.c[1]);
+	printf("2 = %f\n\n", c.reflectv.c[2]);
+	*/
 	SDL_UpdateTexture(sdl.text, NULL, sdl.img, WIN_W * (sizeof(int)));
 	SDL_RenderClear(sdl.ren);
 	SDL_RenderCopy(sdl.ren, sdl.text, NULL, NULL);

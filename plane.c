@@ -75,13 +75,17 @@ t_x_t	intersect_pl(void *v_s, t_ray r, t_x_t x, int obj_n)
 	return(x);
 }
 
-t_color	shade_hit_pl(t_world w, t_comps c)
+t_color	shade_hit_pl(t_world w, t_comps c, int remaining)
 {
-	c.shadow = is_shadow(w, c.over_point);
-	t_plane *s;
+	t_color surface;
+	t_color	reflected;
+	t_plane	*s;
+
 	s = (t_plane*)w.obj_ar[c.obj].obj;
-	return (lighting(s->m, w, c));
-	//return (color(0,0,0));
+	c.shadow = is_shadow(w, c.over_point);
+	surface = lighting(s->m, w, c);
+	reflected = reflected_color(w, c, remaining);
+	return (add_col(surface, reflected));
 }
 
 t_color	stripe_at_pl(t_pattern p, void *obj, t_vec wolrd_point)

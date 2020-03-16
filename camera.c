@@ -70,6 +70,8 @@ void    render(t_sdl *sdl, t_camera camera, t_world world)
     int     y;
     t_ray   r;
     t_color col;
+    
+    int remaining = 4; // повторений рекурсии в отражении 
 
     y = 0;
     while (y < camera.vsize)
@@ -78,7 +80,7 @@ void    render(t_sdl *sdl, t_camera camera, t_world world)
         while (x < camera.hsize)
         {
             r = ray_for_pixel(camera, x, y);
-            col = color_at(world, r, x, y);
+            col = color_at(world, r, remaining);
             sdl->img[y * camera.hsize + x] = col_to_int(col);
             x++;
         }

@@ -19,7 +19,9 @@ void	default_world(t_world *w)
 	w->s[0].m.color = color(0.8, 1, 0.6);
 	w->s[0].m.diffuse = 0.7;
 	w->s[0].m.specular = 0.2;
-	
+//
+	//w->s[0].m.ambient = 1;
+//
 	w->s[1] = set_sphere(1);
 	
 	w->s[1].transform = set_transform(w->s[1].transform, scaling(0.5, 0.5, 0.5));
@@ -28,8 +30,17 @@ void	default_world(t_world *w)
 	int i = 0;
 	while (i < w->max_obj)
 	{
-		push_obj((void*)(&w->s[i++]), &normal_at_sp, &intersect_sp, &shade_hit_sp, w);
+		push_obj((void*)(&w->s[i]), &normal_at_sp, &intersect_sp, &shade_hit_sp, w, &w->s[i].m);
+		i++;
 	}
+
+//
+	w->pl[2] = set_plane();
+	w->pl[2].m.reflective = 0.5;
+	w->pl[2].transform = translation(0, -1, 0);
+	push_obj((void*)(&w->pl[2]), &normal_at_pl, &intersect_pl, &shade_hit_pl, w, &w->pl[2].m);
+	w->max_obj = 3;
+	//
 }
 
 t_x_t	set_nul(t_x_t x, int size)
@@ -149,6 +160,7 @@ t_comps	prepare_computations(t_i i, t_ray r, t_world w)
 		c.inside = 0;
 	}
 	c.over_point = add(c.point, mult(c.normalv, EPSILON));
+	c.reflectv = reflect(r.d, c.normalv);
 	return(c);
 }
 
@@ -160,7 +172,7 @@ t_comps	prepare_computations(t_i i, t_ray r, t_world w)
 	return (lighting(s->m, w.light, c.point, c.eyev, c.normalv, c.shadow));
 }*/
 
-t_color	color_at(t_world w, t_ray r, int a, int b)
+t_color	color_at(t_world w, t_ray r, int remaining)
 {
 	t_x_t	x;
 	int hit_obj;
@@ -177,7 +189,7 @@ t_color	color_at(t_world w, t_ray r, int a, int b)
 	{
 		i = intersection(x.t[hit_obj].t, x.t[hit_obj].obj);
 		comps = prepare_computations(i, r, w);
-		col = (*w.obj_ar[comps.obj].loc_shade)(w, comps);
+		col = (*w.obj_ar[comps.obj].loc_shade)(w, comps, remaining);
 		//col = shade_hit(w, comps);
 	}
 	else

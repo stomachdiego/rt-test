@@ -17,8 +17,8 @@
 # include <SDL.h>
 # include <math.h>
 
-# define WIN_W 100
-# define WIN_H 100
+# define WIN_W 250
+# define WIN_H 250
 # define EPSILON 0.00001
 
 typedef struct		s_matrix
@@ -157,7 +157,8 @@ struct				s_shape
 	void			*obj;
 	int				(*loc_norm)(void *obj, t_vec world_point, t_vec *n);
 	t_x_t			(*loc_intersect)(void *obj, t_ray r, t_x_t x, int obj_n);
-	t_color			(*loc_shade)(t_world w, t_comps c);
+	t_color			(*loc_shade)(t_world w, t_comps c, int remaining);
+	t_material		*m;
 };
 
 struct				s_world
@@ -253,8 +254,8 @@ void				bubblesort(t_t_o *num, int size);
 t_i					intersection(double t, int obj);
 t_comps				prepare_computations(t_i i, t_ray r, t_world w);
 //shade
-t_color				shade_hit_sp(t_world w, t_comps c);
-t_color				color_at(t_world w, t_ray r, int a, int b);
+t_color				shade_hit_sp(t_world w, t_comps c, int remaining);
+t_color				color_at(t_world w, t_ray r, int remaining);
 int					hit(t_x_t x);
 
 //view transform
@@ -271,13 +272,13 @@ int					is_shadow(t_world w, t_vec	p);
 //shape
 t_vec				sp_normal_at(t_shape s, t_vec local_point);
 void				push_obj(void *obj, int (*loc_norm)(void *, t_vec, t_vec*),
-t_x_t (*loc_intersect)(void *, t_ray, t_x_t, int), t_color (*loc_shade)(t_world, t_comps), t_world *w);
+t_x_t (*loc_intersect)(void *, t_ray, t_x_t, int), t_color (*loc_shade)(t_world, t_comps, int), t_world *w, t_material *m);
 
 //plane
 int					normal_at_pl(void *v_s, t_vec world_point, t_vec *n);
 t_plane				set_plane();
 t_x_t				intersect_pl(void *v_s, t_ray r, t_x_t x, int obj_n);
-t_color				shade_hit_pl(t_world w, t_comps c);
+t_color				shade_hit_pl(t_world w, t_comps c, int remaining);
 
 //patterns
 void   stripe_pattern_pl(t_color a, t_color b, t_plane *pl);
@@ -302,5 +303,8 @@ t_color	checker_at_sp(t_pattern p, void *obj, t_vec wolrd_point);
 t_color	checker_at_pl(t_pattern p, void *obj, t_vec wolrd_point);
 void   checker_pattern_pl(t_color a, t_color b, t_plane *pl);
 void   checker_pattern_sp(t_color a, t_color b, t_sp *s);
+
+//reflect
+t_color reflected_color(t_world w, t_comps c, int remaining);
 
 #endif
